@@ -40,6 +40,8 @@ This is the core API for the L5 Smart Cafeteria platform. The system optimizes c
 
 
 ## Repository Layout
+
+```text
 backend/
 ├── node_modules/             # Project dependencies
 ├── src/
@@ -58,6 +60,7 @@ backend/
 ├── pnpm-lock.yaml            # Locked dependency versions
 ├── README.md                 # Project documentation
 └── tsconfig.json             # TypeScript compiler settings
+```
 
 ## Scripts
 - `pnpm dev`: Run in watch mode with nodemon and ts-node
