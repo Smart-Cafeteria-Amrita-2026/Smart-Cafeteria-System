@@ -1,6 +1,6 @@
-export interface ServiceResponse {
+export interface ServiceResponse<T> {
   success: boolean;
-  data?: any;
+  data?: T;
   error?: string;
   statusCode: number;
 }
