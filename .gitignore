@@ -39,6 +39,7 @@ backend/dist/
 backend/build/
 backend/bin/
 backend/tmp/
+backend/bruno/
 
 # TypeScript
 backend/*.tsbuildinfo
