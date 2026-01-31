@@ -6,6 +6,7 @@ Thumbs.db
 *.log
 *.tmp
 *.swp
+node_modules
 
 # Environment variables (never commit secrets)
 .env

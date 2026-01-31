@@ -10,7 +10,7 @@
 		"lint": "biome lint .",
 		"check": "biome check .",
 		"type-check": "tsc --noEmit",
-		"prepare": "husky"
+		"pre-commit": "lint-staged"
 	},
 	"keywords": [],
 	"author": "",
@@ -30,7 +30,6 @@
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
 		"@types/node": "^25.0.9",
-		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
 		"nodemon": "^3.1.11",
 		"rimraf": "^6.1.2",
