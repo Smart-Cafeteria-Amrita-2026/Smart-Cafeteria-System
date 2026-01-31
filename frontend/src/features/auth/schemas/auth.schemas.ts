@@ -19,24 +19,34 @@ export type OtpFormValues = z.infer<typeof otpSchema>;
 
 /* ===================== REGISTER ===================== */
 
-export const registerSchema = z.object({
-    email: z.string().email('Invalid email'),
-    password: z
-        .string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/[A-Z]/, 'Must contain uppercase letter')
-        .regex(/[0-9]/, 'Must contain a number')
-        .regex(/[@$!%*?&#]/, 'Must contain special character'),
 
-    first_name: z.string().min(1, 'First name is required'),
-    last_name: z.string().min(1, 'Last name is required'),
-    college_id: z.string().min(5, 'College ID is required'),
-    mobile: z.string().length(10, 'Mobile number must be 10 digits'),
-    role: z.literal('USER'),
-    department: z.string().min(2, 'Department is required'),
-});
+export const registerSchema = z
+    .object({
+        email: z.string().email("Invalid email"),
+
+        password: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[@$!%*?&#]/, "Password must contain at least one special character"),
+
+        confirm_password: z.string(),
+
+        first_name: z.string().min(1, "First name is required"),
+        last_name: z.string().min(1, "Last name is required"),
+        college_id: z.string().min(5, "College ID is required"),
+        mobile: z.string().length(10, "Mobile number must be 10 digits"),
+        role: z.literal("USER"),
+        department: z.string().min(2, "Department is required"),
+    })
+    .refine((data) => data.password === data.confirm_password, {
+        message: "Passwords do not match",
+        path: ["confirm_password"],
+    });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+
 
 /* ===================== FORGOT PASSWORD ===================== */
 

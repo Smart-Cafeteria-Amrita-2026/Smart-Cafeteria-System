@@ -1,10 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthHeader } from "./AuthHeader";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 
 interface LoginFormProps {
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -12,6 +13,19 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const emailWarning =
+        email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+            ? "Enter a valid email address"
+            : null;
+
+    const passwordWarning =
+        password.length === 0 && email
+            ? "Password is required"
+            : null;
+
     return (
         <>
             {/* Header with illustration */}
@@ -34,7 +48,14 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
                         type="email"
                         placeholder="you@example.com"
                         className="h-11 sm:h-12"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
+                    {emailWarning && (
+                        <p className="text-sm text-destructive">
+                            {emailWarning}
+                        </p>
+                    )}
                 </div>
 
                 {/* Password */}
@@ -44,7 +65,14 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
                         id="password"
                         type="password"
                         className="h-11 sm:h-12"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
+                    {passwordWarning && (
+                        <p className="text-sm text-destructive">
+                            {passwordWarning}
+                        </p>
+                    )}
                 </div>
 
                 {/* Forgot password */}
@@ -65,39 +93,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
                 >
                     {isLoading ? "Signing in..." : "Login"}
                 </Button>
-
             </form>
-
-            {/* Divider */}
-            <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
-                    </span>
-                </div>
-            </div>
-
-            {/* Social login buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                    type="button"
-                    className="flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium hover:bg-muted transition"
-                >
-                    <FcGoogle size={18} />
-                    Continue with Google
-                </button>
-
-                <button
-                    type="button"
-                    className="flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium hover:bg-muted transition"
-                >
-                    <FaFacebook size={18} className="text-blue-600" />
-                    Continue with Facebook
-                </button>
-            </div>
 
             {/* Footer */}
             <p className="mt-6 text-center text-sm sm:text-base text-muted-foreground">

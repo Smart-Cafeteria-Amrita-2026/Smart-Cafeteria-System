@@ -16,6 +16,7 @@ export function RegisterFormContainer() {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
@@ -31,17 +32,9 @@ export function RegisterFormContainer() {
     return (
         <RegisterForm
             register={register}
+            watch={watch}
             isLoading={isPending}
-            errors={{
-                email: errors.email?.message,
-                password: errors.password?.message,
-                first_name: errors.first_name?.message,
-                last_name: errors.last_name?.message,
-                college_id: errors.college_id?.message,
-                mobile: errors.mobile?.message,
-                department: errors.department?.message,
-                role: errors.role?.message,
-            }}
+            errors={errors}
             onSubmit={handleSubmit((data) => mutate(data))}
         />
     );
