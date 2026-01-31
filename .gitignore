@@ -8,8 +8,16 @@ Thumbs.db
 *.swp
 node_modules/
 
+# Archives / exports (DO NOT COMMIT)
+*.zip
+*.tar
+*.rar
+*.7z
+
 # Environment variables (never commit secrets)
 .env
+.env.*
+!.env.example
 
 # =====================================================
 # FRONTEND (Next.js + TypeScript + Tailwind)
@@ -21,7 +29,7 @@ frontend/dist/
 frontend/.turbo/
 frontend/.vercel/
 
-# Next.js / Vite / tooling
+# Caches / tooling
 frontend/.eslintcache
 frontend/.swc/
 frontend/.cache/
@@ -62,14 +70,14 @@ forecast_engine/.venv/
 forecast_engine/venv/
 forecast_engine/env/
 
-# FastAPI / Uvicorn
+# FastAPI / testing / lint
 forecast_engine/.mypy_cache/
 forecast_engine/.pytest_cache/
 forecast_engine/.ruff_cache/
 forecast_engine/.coverage
 forecast_engine/htmlcov/
 
-# ML / Data artifacts (VERY IMPORTANT)
+# ML / data artifacts (generated files ONLY)
 forecast_engine/data/
 forecast_engine/models/
 forecast_engine/*.pkl
@@ -100,7 +108,7 @@ coverage/
 *.lcov
 
 # =====================================================
-# MISC
+# PACKAGE MANAGER LOGS
 # =====================================================
 npm-debug.log*
 yarn-debug.log*
