@@ -2,11 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { public_client } from "../config/supabase";
 import type { UserDetails } from "../interfaces/user.types";
 
-export const requireAuth = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
 	const accessToken = req.cookies.access_token;
 	const refreshToken = req.cookies.refresh_token;
 
@@ -18,6 +14,7 @@ export const requireAuth = async (
 
 		if (user && !error && user.email) {
 			const userDetails: UserDetails = {
+				id: user.id,
 				email: user.email,
 				role: user.user_metadata.role,
 				college_id: user.user_metadata.college_id,
@@ -38,9 +35,7 @@ export const requireAuth = async (
 		if (error || !data.session) {
 			res.clearCookie("access_token");
 			res.clearCookie("refresh_token");
-			return res
-				.status(401)
-				.json({ error: "Session expired. Please login again." });
+			return res.status(401).json({ error: "Session expired. Please login again." });
 		}
 
 		const isProduction = process.env.NODE_ENV === "production";
@@ -62,6 +57,7 @@ export const requireAuth = async (
 
 		if (data.user?.email) {
 			const userDetails: UserDetails = {
+				id: data.user.id,
 				email: data.user.email,
 				role: data.user?.user_metadata.role,
 				college_id: data.user?.user_metadata.college_id,
