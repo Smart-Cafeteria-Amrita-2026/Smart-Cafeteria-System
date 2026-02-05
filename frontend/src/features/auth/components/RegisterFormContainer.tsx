@@ -6,7 +6,7 @@ import {
     registerSchema,
     type RegisterFormValues,
 } from '../schemas/auth.schemas';
-import { useRegister } from '../hooks/useRegister';
+import { useRegister } from '../../../hooks/useRegister';
 import { RegisterForm } from './RegisterForm';
 import { RegisterFormSkeleton } from './RegisterFormSkeleton';
 

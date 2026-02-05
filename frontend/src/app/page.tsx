@@ -1,4 +1,3 @@
-import { Navbar } from '@/components/navbar/Navbar';
 import { LandingHero } from '@/features/landing/components/LandingHero';
 import { MealCategoryGrid } from '@/features/landing/components/MealCategoryGrid';
 import { LandingInfo } from '@/features/landing/components/LandingInfo';
@@ -6,8 +5,6 @@ import { LandingInfo } from '@/features/landing/components/LandingInfo';
 export default function HomePage() {
   return (
     <>
-      <Navbar />
-
       {/* HERO (BLUE) */}
       <LandingHero
         title="Smart Cafeteria Management System"

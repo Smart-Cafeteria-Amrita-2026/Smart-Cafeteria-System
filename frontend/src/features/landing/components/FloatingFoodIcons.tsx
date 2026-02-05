@@ -39,7 +39,7 @@ export function FloatingFoodIcons() {
                 size: 65 + Math.random() * 35,        // 65–100px
                 top: base.top + Math.random() * 4,    // small offset
                 left: base.left + Math.random() * 4,  // small offset
-                duration: 18 + Math.random() * 12,    // slow & smooth
+                duration: 12 + Math.random() * 8, // 12–20s   // slow & smooth
                 delay: Math.random() * 6,
             };
         });

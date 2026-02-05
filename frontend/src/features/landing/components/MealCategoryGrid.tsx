@@ -7,28 +7,28 @@ const meals = [
         title: 'Breakfast',
         caption: 'Start your day fresh & energized',
         image: '/assets/meals/breakfast.jpg',
-        href: '/menu?type=breakfast',
+        href: '/slots?type=breakfast',
     },
     {
         id: 'lunch',
         title: 'Lunch',
         caption: 'Hearty meals to power your day',
         image: '/assets/meals/lunch.jpg',
-        href: '/menu?type=lunch',
+        href: '/slots?type=lunch',
     },
     {
         id: 'snacks',
         title: 'Snacks',
         caption: 'Quick bites for short breaks',
         image: '/assets/meals/snacks.jpg',
-        href: '/menu?type=snacks',
+        href: '/slots?type=snacks',
     },
     {
         id: 'dinner',
         title: 'Dinner',
         caption: 'End your day with comfort food',
         image: '/assets/meals/dinner.jpg',
-        href: '/menu?type=dinner',
+        href: '/slots?type=dinner',
     },
 ];
 

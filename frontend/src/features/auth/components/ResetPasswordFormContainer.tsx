@@ -8,7 +8,7 @@ import {
     type ResetPasswordFormValues,
 } from "../schemas/auth.schemas";
 import { ResetPasswordForm } from "./ResetPasswordForm";
-import { useResetPassword } from "../hooks/useResetPassword";
+import { useResetPassword } from "../../../hooks/useResetPassword";
 
 export function ResetPasswordFormContainer() {
     const searchParams = useSearchParams();
