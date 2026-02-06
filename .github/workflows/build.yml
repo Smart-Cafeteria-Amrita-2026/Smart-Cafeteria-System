@@ -24,10 +24,10 @@ jobs:
         include:
           - project: backend
             cache-path: 'backend/pnpm-lock.yaml'
-            build-command: 'pnpm run build'
+            build-command: 'pnpm -w run build'
           - project: frontend
             cache-path: 'frontend/pnpm-lock.yaml'
-            build-command: 'pnpm run build'
+            build-command: 'pnpm -w run build'
 
     defaults:
       run:
