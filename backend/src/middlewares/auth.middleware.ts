@@ -14,6 +14,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 
 		if (user && !error && user.email) {
 			const userDetails: UserDetails = {
+				id: user.id,
 				email: user.email,
 				role: user.user_metadata.role,
 				college_id: user.user_metadata.college_id,
@@ -56,6 +57,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 
 		if (data.user?.email) {
 			const userDetails: UserDetails = {
+				id: data.user.id,
 				email: data.user.email,
 				role: data.user?.user_metadata.role,
 				college_id: data.user?.user_metadata.college_id,
