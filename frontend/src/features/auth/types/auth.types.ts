@@ -1,49 +1,48 @@
 export interface LoginPayload {
-    email: string;
-    password: string;
+	email: string;
+	password: string;
 }
 
 export interface LoginResponse {
-    message: string;
+	message: string;
 }
 
 export interface VerifyOtpPayload {
-    otp: string;
+	otp: string;
 }
 
 export interface VerifyOtpResponse {
-    token: string;
+	token: string;
 }
 
 export interface RegisterPayload {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    college_id: string;
-    mobile: string;
-    role: 'USER' | 'ADMIN';
-    department: string;
+	email: string;
+	password: string;
+	first_name: string;
+	last_name: string;
+	college_id: string;
+	mobile: string;
+	role: "USER" | "ADMIN";
+	department: string;
 }
 
 export interface RegisterResponse {
-    message: string;
+	message: string;
 }
 
 export interface ForgotPasswordPayload {
-    email: string;
+	email: string;
 }
 
 export interface ForgotPasswordResponse {
-    message: string;
+	message: string;
 }
 
 export interface ResetPasswordPayload {
-    token: string;
-    new_password: string;
+	token: string;
+	new_password: string;
 }
 
 export interface ResetPasswordResponse {
-    message: string;
+	message: string;
 }
-

@@ -5,13 +5,13 @@
  */
 
 export type ExampleItem = {
-  id: string;
-  title: string;
-  description: string;
-  date?: string;
+	id: string;
+	title: string;
+	description: string;
+	date?: string;
 };
 
 export type ExampleActionPayload = {
-  exampleId: string;
-  actionType: 'register' | 'like';
+	exampleId: string;
+	actionType: "register" | "like";
 };

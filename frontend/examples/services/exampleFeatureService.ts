@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from '@/src/lib/api';
+import { apiGet, apiPost } from "@/src/lib/api";
 
 /**
  * ExampleService
@@ -7,14 +7,12 @@ import { apiGet, apiPost } from '@/src/lib/api';
  */
 
 export const ExampleService = {
-  // Public GET (no auth)
-  getPublicData: <T>(): Promise<T> =>
-    apiGet('/example/public', { skipAuth: true }),
+	// Public GET (no auth)
+	getPublicData: <T>(): Promise<T> => apiGet("/example/public", { skipAuth: true }),
 
-  // Protected GET (with token)
-  getProtectedData: <T>(): Promise<T> => apiGet('/example/protected'),
+	// Protected GET (with token)
+	getProtectedData: <T>(): Promise<T> => apiGet("/example/protected"),
 
-  // Protected POST (with token)
-  postProtectedAction: <T>(payload: unknown): Promise<T> =>
-    apiPost('/example/action', payload),
+	// Protected POST (with token)
+	postProtectedAction: <T>(payload: unknown): Promise<T> => apiPost("/example/action", payload),
 };

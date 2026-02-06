@@ -3,15 +3,10 @@
 import { OtpForm } from "./OtpForm";
 
 export default function OtpFormContainer() {
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // OTP submit logic (later)
-    };
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		// OTP submit logic (later)
+	};
 
-    return (
-        <OtpForm
-            onSubmit={handleSubmit}
-            isLoading={false}
-        />
-    );
+	return <OtpForm onSubmit={handleSubmit} isLoading={false} />;
 }

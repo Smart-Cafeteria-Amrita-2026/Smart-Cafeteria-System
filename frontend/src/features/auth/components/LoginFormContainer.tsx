@@ -4,18 +4,18 @@ import { LoginForm } from "./LoginForm";
 import { useLogin } from "../hooks/useLogin";
 
 export function LoginFormContainer() {
-    const { mutate: login, isPending } = useLogin();
+	const { mutate: login, isPending } = useLogin();
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
+	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
 
-        const formData = new FormData(e.currentTarget);
+		const formData = new FormData(e.currentTarget);
 
-        login({
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
-        });
-    }
+		login({
+			email: formData.get("email") as string,
+			password: formData.get("password") as string,
+		});
+	}
 
-    return <LoginForm onSubmit={handleSubmit} isLoading={isPending} />;
+	return <LoginForm onSubmit={handleSubmit} isLoading={isPending} />;
 }
