@@ -1,11 +1,10 @@
-import { UserDetails } from '../interfaces/user.types';
+import { UserDetails } from "../interfaces/user.types";
 
 declare global {
-  namespace Express {
-    interface Request {
-      user?: UserDetails;
-      token?: string;
-    }
-  }
+	namespace Express {
+		interface Request {
+			user?: UserDetails;
+			token?: string;
+		}
+	}
 }
-export {};

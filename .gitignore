@@ -9,6 +9,7 @@ Thumbs.db
 
 # Node
 node_modules/
+smart-cafeteria-management
 
 # Archives / exports (DO NOT COMMIT)
 *.zip
