@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ResetPasswordFormContainer } from "@/features/auth/components/ResetPasswordFormContainer";
+import { ResetPasswordFormContainer } from "@/components/auth/ResetPasswordFormContainer";
 
 export default function ResetPasswordPage() {
 	return (

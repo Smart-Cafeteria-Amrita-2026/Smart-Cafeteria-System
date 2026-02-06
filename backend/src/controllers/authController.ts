@@ -135,7 +135,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
 		}
 
 		const accessToken = authHeader.split(" ")[1];
-		console.log(accessToken);
 		await updateUserPassword(accessToken, validatedData.data.password);
 
 		res.status(STATUS.SUCCESS).json({ message: "Password updated successfully" });
