@@ -1,4 +1,4 @@
-import { SkeletonBlock } from '@/src/components/skeletonBlock';
+import { SkeletonBlock } from '@/components/ui/SkeletonBlock';
 
 export function ExampleSkeleton() {
   return (

@@ -1,6 +1,9 @@
+import '../styles/globals.css';
+
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
-import '../styles/globals.css'; // Go up ONE level from app to src, then styles
+import { ReactQueryProvider } from '@/lib/react-query-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -9,15 +12,13 @@ export const metadata: Metadata = {
   description: 'Staff dashboard for canteen management',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );

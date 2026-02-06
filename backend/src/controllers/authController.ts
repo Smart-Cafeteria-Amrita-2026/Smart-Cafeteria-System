@@ -18,25 +18,18 @@ export const testRoute = async (res: Response): Promise<void> => {
 	res.send("Backend is running!");
 };
 
-export const registerUser = async (
-	req: Request,
-	res: Response,
-): Promise<void> => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const validatedData = registerSchema.safeParse(req.body);
 
 		if (!validatedData.success) {
-			res
-				.status(STATUS.BADREQUEST)
-				.json({ error: `Validation Error: ${validatedData.error}` });
+			res.status(STATUS.BADREQUEST).json({ error: `Validation Error: ${validatedData.error}` });
 			return;
 		}
 		const result = await createUser(validatedData.data);
 
 		if (!result.success) {
-			res
-				.status(result.statusCode)
-				.json({ success: false, error: result.error });
+			res.status(result.statusCode).json({ success: false, error: result.error });
 			return;
 		}
 
@@ -46,31 +39,22 @@ export const registerUser = async (
 			data: result.data,
 		});
 	} catch (error) {
-		res
-			.status(STATUS.SERVERERROR)
-			.json({ message: "Internal Server Error", error: error });
+		res.status(STATUS.SERVERERROR).json({ message: "Internal Server Error", error: error });
 	}
 };
 
-export const signInUser = async (
-	req: Request,
-	res: Response,
-): Promise<void> => {
+export const signInUser = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const validatedData = signInSchema.safeParse(req.body);
 		if (!validatedData.success) {
-			res
-				.status(STATUS.BADREQUEST)
-				.json({ error: `Validation Error: ${validatedData.error}` });
+			res.status(STATUS.BADREQUEST).json({ error: `Validation Error: ${validatedData.error}` });
 			return;
 		}
 		const result = await signIn(validatedData.data);
 		const isProduction = process.env.NODE_ENV === "production";
 
 		if (!result.success) {
-			res
-				.status(result.statusCode)
-				.json({ success: false, error: result.error });
+			res.status(result.statusCode).json({ success: false, error: result.error });
 			return;
 		}
 
@@ -94,9 +78,7 @@ export const signInUser = async (
 			data: result.data,
 		});
 	} catch (error) {
-		res
-			.status(STATUS.SERVERERROR)
-			.json({ message: "Internal Server Error", error: error });
+		res.status(STATUS.SERVERERROR).json({ message: "Internal Server Error", error: error });
 	}
 };
 
@@ -113,22 +95,15 @@ export const logoutUser = async (req: Request, res: Response) => {
 		}
 	}
 
-	return res
-		.status(STATUS.SUCCESS)
-		.json({ message: "Logged out successfully" });
+	return res.status(STATUS.SUCCESS).json({ message: "Logged out successfully" });
 };
 
-export const forgotPassword = async (
-	req: Request,
-	res: Response,
-): Promise<void> => {
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const validatedData = forgotPasswordSchema.safeParse(req.body);
 
 		if (!validatedData.success) {
-			res
-				.status(STATUS.BADREQUEST)
-				.json({ error: `Validation Error: ${validatedData.error}` });
+			res.status(STATUS.BADREQUEST).json({ error: `Validation Error: ${validatedData.error}` });
 			return;
 		}
 
@@ -143,26 +118,19 @@ export const forgotPassword = async (
 	}
 };
 
-export const updatePassword = async (
-	req: Request,
-	res: Response,
-): Promise<void> => {
+export const updatePassword = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const validatedData = updatePasswordSchema.safeParse(req.body);
 
 		if (!validatedData.success) {
-			res
-				.status(STATUS.BADREQUEST)
-				.json({ error: `Validation Error: ${validatedData.error}` });
+			res.status(STATUS.BADREQUEST).json({ error: `Validation Error: ${validatedData.error}` });
 			return;
 		}
 
 		// Get the Access Token from the Authorization header (sent by frontend)
 		const authHeader = req.headers.authorization;
 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
-			res
-				.status(STATUS.UNAUTHORIZED)
-				.json({ message: "Missing or invalid authentication token" });
+			res.status(STATUS.UNAUTHORIZED).json({ message: "Missing or invalid authentication token" });
 			return;
 		}
 
@@ -170,15 +138,11 @@ export const updatePassword = async (
 		console.log(accessToken);
 		await updateUserPassword(accessToken, validatedData.data.password);
 
-		res
-			.status(STATUS.SUCCESS)
-			.json({ message: "Password updated successfully" });
+		res.status(STATUS.SUCCESS).json({ message: "Password updated successfully" });
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error("Error:", error.message);
-			res
-				.status(STATUS.SERVERERROR)
-				.json({ error: error.message || "failed to update password" });
+			res.status(STATUS.SERVERERROR).json({ error: error.message || "failed to update password" });
 		} else {
 			console.error("Unknown error:", error);
 			res.status(500).json({ error: "An unknown error occurred" });
