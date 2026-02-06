@@ -43,7 +43,18 @@ export const updatePasswordSchema = z.object({
 	password: passwordSchema,
 });
 
+export const updateProfileSchema = z.object({
+	first_name: z.string().min(2, "First Name is too short").optional(),
+	last_name: z.string().min(1, "Last Name is too short").optional(),
+	mobile: z
+		.string()
+		.regex(/^[6-9]\d{9}$/, "Mobile number must be exactly 10 digits")
+		.optional(),
+	department: z.string().optional(),
+});
+
 export type RegisterUserInput = z.infer<typeof registerSchema>;
 export type SignInUserInput = z.infer<typeof signInSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type updatePasswordInupt = z.infer<typeof updatePasswordSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

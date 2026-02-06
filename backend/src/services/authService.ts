@@ -1,7 +1,11 @@
 import { getAuthenticatedClient, public_client, service_client } from "../config/supabase";
 import type { SignInRequest, signInResponse } from "../interfaces/auth.types";
 import { type ServiceResponse, STATUS } from "../interfaces/status.types";
-import type { RegisterUserRequest } from "../interfaces/user.types";
+import type {
+	RegisterUserRequest,
+	UpdateProfileRequest,
+	UserProfile,
+} from "../interfaces/user.types";
 
 export const createUser = async (
 	validatedUser: RegisterUserRequest
@@ -149,4 +153,70 @@ export const updateUserPassword = async (
 	if (updateError) {
 		throw new Error(updateError.message);
 	}
+};
+
+export const getUserProfile = async (userId: string): Promise<ServiceResponse<UserProfile>> => {
+	const { data, error } = await service_client
+		.from("users")
+		.select(
+			"id, email, first_name, last_name, college_id, mobile, department, role, account_status, wallet_balance, created_at"
+		)
+		.eq("id", userId)
+		.single();
+
+	if (error) {
+		return {
+			success: false,
+			error: error.message,
+			statusCode: STATUS.NOTFOUND,
+		};
+	}
+
+	return {
+		success: true,
+		statusCode: STATUS.SUCCESS,
+		data: data as UserProfile,
+	};
+};
+
+export const updateUserProfile = async (
+	userId: string,
+	updateData: UpdateProfileRequest
+): Promise<ServiceResponse<UserProfile>> => {
+	const { data, error } = await service_client
+		.from("users")
+		.update({
+			...updateData,
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", userId)
+		.select(
+			"id, email, first_name, last_name, college_id, mobile, department, role, account_status, wallet_balance, created_at"
+		)
+		.single();
+
+	if (error) {
+		return {
+			success: false,
+			error: error.message,
+			statusCode: STATUS.BADREQUEST,
+		};
+	}
+
+	// Also update auth metadata if first_name or last_name changed
+	if (updateData.first_name || updateData.last_name) {
+		const metadataUpdate: Record<string, string> = {};
+		if (updateData.first_name) metadataUpdate.first_name = updateData.first_name;
+		if (updateData.last_name) metadataUpdate.last_name = updateData.last_name;
+
+		await service_client.auth.admin.updateUserById(userId, {
+			user_metadata: metadataUpdate,
+		});
+	}
+
+	return {
+		success: true,
+		statusCode: STATUS.SUCCESS,
+		data: data as UserProfile,
+	};
 };

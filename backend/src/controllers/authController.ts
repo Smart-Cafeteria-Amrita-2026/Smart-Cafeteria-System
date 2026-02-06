@@ -2,16 +2,19 @@ import type { Request, Response } from "express";
 import { STATUS } from "../interfaces/status.types";
 import {
 	createUser,
+	getUserProfile,
 	logOut,
 	requestPasswordReset,
 	signIn,
 	updateUserPassword,
+	updateUserProfile,
 } from "../services/authService";
 import {
 	forgotPasswordSchema,
 	registerSchema,
 	signInSchema,
 	updatePasswordSchema,
+	updateProfileSchema,
 } from "../validations/auth.schema";
 
 export const testRoute = async (res: Response): Promise<void> => {
@@ -146,5 +149,91 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
 			console.error("Unknown error:", error);
 			res.status(500).json({ error: "An unknown error occurred" });
 		}
+	}
+};
+
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const userId = req.user?.college_id;
+
+		if (!userId) {
+			res.status(STATUS.UNAUTHORIZED).json({ error: "User not authenticated" });
+			return;
+		}
+
+		// Get user ID from the users table using college_id
+		const { service_client } = await import("../config/supabase");
+		const { data: userData, error: userError } = await service_client
+			.from("users")
+			.select("id")
+			.eq("college_id", userId)
+			.single();
+
+		if (userError || !userData) {
+			res.status(STATUS.NOTFOUND).json({ error: "User not found" });
+			return;
+		}
+
+		const result = await getUserProfile(userData.id);
+
+		if (!result.success) {
+			res.status(result.statusCode).json({ success: false, error: result.error });
+			return;
+		}
+
+		res.status(result.statusCode).json({
+			success: true,
+			data: result.data,
+		});
+	} catch (error) {
+		console.error("Get Profile Error:", error);
+		res.status(STATUS.SERVERERROR).json({ message: "Internal Server Error", error: error });
+	}
+};
+
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const userId = req.user?.college_id;
+
+		if (!userId) {
+			res.status(STATUS.UNAUTHORIZED).json({ error: "User not authenticated" });
+			return;
+		}
+
+		const validatedData = updateProfileSchema.safeParse(req.body);
+
+		if (!validatedData.success) {
+			res.status(STATUS.BADREQUEST).json({ error: `Validation Error: ${validatedData.error}` });
+			return;
+		}
+
+		// Get user ID from the users table using college_id
+		const { service_client } = await import("../config/supabase");
+		const { data: userData, error: userError } = await service_client
+			.from("users")
+			.select("id")
+			.eq("college_id", userId)
+			.single();
+
+		if (userError || !userData) {
+			res.status(STATUS.NOTFOUND).json({ error: "User not found" });
+			return;
+		}
+
+		const result = await updateUserProfile(userData.id, validatedData.data);
+
+		if (!result.success) {
+			res.status(result.statusCode).json({ success: false, error: result.error });
+			return;
+		}
+
+		res.status(result.statusCode).json({
+			success: true,
+			message: "Profile updated successfully",
+			data: result.data,
+		});
+	} catch (error) {
+		console.error("Update Profile Error:", error);
+		res.status(STATUS.SERVERERROR).json({ message: "Internal Server Error", error: error });
 	}
 };
