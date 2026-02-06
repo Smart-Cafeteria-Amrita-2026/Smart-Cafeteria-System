@@ -1,33 +1,38 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User } from '@/src/types/login';
 
-type AuthStoreState = {
-  user: User | null;
+interface AuthStoreState {
+  token: string | null;
   isHydrated: boolean;
-  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
   logout: () => void;
   setHydrated: () => void;
-};
+}
 
 export const useAuthStore = create<AuthStoreState>()(
   persist(
     (set) => ({
-      user: null,
+      token: null,
       isHydrated: false,
-      setUser: (user: User | null) => set({ user }),
-      logout: () => set({ user: null }),
+
+      setToken: (token) => set({ token }),
+
+      logout: () => set({ token: null }),
+
       setHydrated: () => set({ isHydrated: true }),
     }),
     {
       name: 'auth-store',
+
+      // called when Zustand rehydrates from localStorage
       onRehydrateStorage: () => (state) => {
-        (state as AuthStoreState)?.setHydrated();
+        state?.setHydrated();
       },
-      partialize: (state: AuthStoreState) =>
-        ({
-          user: state.user,
-        }) as unknown as AuthStoreState,
-    },
-  ) as any,
+
+      // only persist what is needed
+      partialize: (state) => ({
+        token: state.token,
+      }),
+    }
+  )
 );

@@ -1,33 +1,20 @@
-import {
-	getAuthenticatedClient,
-	public_client,
-	service_client,
-} from "../config/supabase";
+import { getAuthenticatedClient, public_client, service_client } from "../config/supabase";
 import type { SignInRequest, signInResponse } from "../interfaces/auth.types";
 import { type ServiceResponse, STATUS } from "../interfaces/status.types";
 import type { RegisterUserRequest } from "../interfaces/user.types";
 
 export const createUser = async (
-	validatedUser: RegisterUserRequest,
+	validatedUser: RegisterUserRequest
 ): Promise<ServiceResponse<void>> => {
-	const {
+	const { email, password, role, first_name, last_name, college_id, mobile, department } =
+		validatedUser;
+
+	const { data: authData, error: authError } = await service_client.auth.admin.createUser({
 		email,
 		password,
-		role,
-		first_name,
-		last_name,
-		college_id,
-		mobile,
-		department,
-	} = validatedUser;
-
-	const { data: authData, error: authError } =
-		await service_client.auth.admin.createUser({
-			email,
-			password,
-			email_confirm: true,
-			user_metadata: { first_name, last_name, college_id, role },
-		});
+		email_confirm: true,
+		user_metadata: { first_name, last_name, college_id, role },
+	});
 
 	if (authError)
 		return {
@@ -71,15 +58,14 @@ export const createUser = async (
 };
 
 export const signIn = async (
-	validatedUser: SignInRequest,
+	validatedUser: SignInRequest
 ): Promise<ServiceResponse<signInResponse>> => {
 	const { email, password } = validatedUser;
 
-	const { data: authData, error: authError } =
-		await public_client.auth.signInWithPassword({
-			email,
-			password,
-		});
+	const { data: authData, error: authError } = await public_client.auth.signInWithPassword({
+		email,
+		password,
+	});
 
 	if (authError)
 		return {
@@ -106,9 +92,7 @@ export const signIn = async (
 	};
 };
 
-export const logOut = async (
-	accessToken: string,
-): Promise<ServiceResponse<void>> => {
+export const logOut = async (accessToken: string): Promise<ServiceResponse<void>> => {
 	try {
 		const supabase = getAuthenticatedClient(accessToken);
 		const { error } = await supabase.auth.signOut();
@@ -148,7 +132,7 @@ export const requestPasswordReset = async (email: string): Promise<void> => {
 
 export const updateUserPassword = async (
 	accessToken: string,
-	newPassword: string,
+	newPassword: string
 ): Promise<void> => {
 	const {
 		data: { user },
@@ -158,10 +142,9 @@ export const updateUserPassword = async (
 		throw new Error("Invalid or expired session token");
 	}
 
-	const { error: updateError } = await service_client.auth.admin.updateUserById(
-		user.id,
-		{ password: newPassword },
-	);
+	const { error: updateError } = await service_client.auth.admin.updateUserById(user.id, {
+		password: newPassword,
+	});
 
 	if (updateError) {
 		throw new Error(updateError.message);
