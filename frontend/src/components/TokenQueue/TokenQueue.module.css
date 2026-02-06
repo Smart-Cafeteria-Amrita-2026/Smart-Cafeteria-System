@@ -1,0 +1,239 @@
+.container {
+  width: 100%;
+}
+
+.counterFilter {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid hsl(var(--border));
+  flex-wrap: wrap;
+}
+
+.counterButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.counterButton:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.counterButton.active {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.tableContainer {
+  background-color: hsl(var(--card));
+  border-radius: var(--radius-lg);
+  border: 1px solid hsl(var(--border));
+  overflow: hidden;
+  margin-bottom: var(--spacing-6);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: var(--spacing-4) var(--spacing-6);
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid hsl(var(--border));
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tr {
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.tr:hover {
+  background-color: hsl(var(--muted));
+}
+
+.td {
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-sm);
+}
+
+.tokenCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.tokenNumber {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: hsl(var(--foreground));
+}
+
+.tokenTime {
+  font-size: var(--font-size-xs);
+  color: hsl(var(--muted-foreground));
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+}
+
+.userName {
+  font-weight: var(--font-weight-medium);
+  color: hsl(var(--foreground));
+}
+
+.userId {
+  font-size: var(--font-size-xs);
+  color: hsl(var(--muted-foreground));
+}
+
+.slotCell {
+  display: flex;
+  align-items: center;
+}
+
+.slotTiming {
+  font-size: var(--font-size-sm);
+  color: hsl(var(--foreground));
+  font-weight: var(--font-weight-medium);
+}
+
+.counterTag {
+  background-color: hsl(var(--success-light));
+  color: hsl(var(--success));
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.unassigned {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.statusBadge {
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: white;
+  display: inline-block;
+  text-align: center;
+  min-width: 70px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.actionButton {
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.actionButton:hover {
+  opacity: 0.9;
+}
+
+.servedButton {
+  background-color: hsl(var(--success));
+  color: black; /* Changed from primary-foreground to black for better contrast */
+}
+
+.counterSelect {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-md);
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.counterSelect:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  background-color: hsl(var(--muted));
+  border-radius: var(--radius-lg);
+  border: 1px solid hsl(var(--border));
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2);
+}
+
+.summaryLabel {
+  font-size: var(--font-size-sm);
+  color: hsl(var(--muted-foreground));
+}
+
+.summaryValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: hsl(var(--foreground));
+}
+
+/* Custom success-light color variable */
+:root {
+  --success-light: 160 84% 39% / 0.1;
+}

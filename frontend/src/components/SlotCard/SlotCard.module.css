@@ -1,0 +1,153 @@
+.card {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.card.active {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsl(var(--primary));
+}
+
+.card.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.mealType {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.mealIcon {
+  font-size: var(--font-size-xl);
+}
+
+.mealLabel {
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--foreground));
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timing {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: hsl(var(--muted-foreground));
+  font-size: var(--font-size-sm);
+}
+
+.timeIcon {
+  font-size: var(--font-size-sm);
+}
+
+.progressSection {
+  margin-bottom: var(--spacing-4);
+}
+
+.progressBar {
+  height: 8px;
+  background-color: hsl(var(--muted));
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-2);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+.progressStats {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+}
+
+.booked {
+  color: hsl(var(--foreground));
+  font-weight: var(--font-weight-medium);
+}
+
+.available {
+  color: hsl(var(--muted-foreground));
+}
+
+.capacityInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid hsl(var(--border));
+}
+
+.capacityItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.capacityLabel {
+  font-size: var(--font-size-xs);
+  color: hsl(var(--muted-foreground));
+}
+
+.capacityValue {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: hsl(var(--foreground));
+}
+
+.status {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+}
+
+.activeStatus {
+  background-color: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+}
+
+.inactiveStatus {
+  background-color: hsl(var(--muted-foreground) / 0.1);
+  color: hsl(var(--muted-foreground));
+}
+
+.viewQueueButton {
+  width: 100%;
+  padding: var(--spacing-2);
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.viewQueueButton:hover {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+}

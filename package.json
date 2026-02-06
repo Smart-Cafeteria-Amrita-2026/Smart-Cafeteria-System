@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "pnpm --filter ./frontend run build && pnpm --filter ./backend run build",
+    "lint": "pnpm --filter ./frontend run lint && pnpm --filter ./backend run lint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
     "pre-commit": "pnpm --filter ./backend run pre-commit && pnpm --filter ./frontend run pre-commit"
