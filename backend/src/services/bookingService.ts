@@ -18,7 +18,7 @@ import type {
 import { type ServiceResponse, STATUS } from "../interfaces/status.types";
 
 // Helper function to generate booking reference
-const generateBookingReference = (): string => {
+export const generateBookingReference = (): string => {
 	const timestamp = Date.now().toString(36).toUpperCase();
 	const random = Math.random().toString(36).substring(2, 6).toUpperCase();
 	return `BK-${timestamp}-${random}`;

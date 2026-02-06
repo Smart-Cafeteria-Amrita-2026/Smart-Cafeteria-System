@@ -5,6 +5,7 @@ import express from "express";
 import authRoutes from "./routes/authRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
 import tokenRoutes from "./routes/tokenRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 
 dotenv.config();
 
@@ -13,6 +14,11 @@ const port = process.env.PORT || 3001;
 
 //MIDDLEWARES
 app.use(cors());
+
+// Note: Stripe webhook needs raw body, so we handle it in paymentRoutes before express.json()
+// The webhook route uses express.raw() middleware internally
+app.use("/api/payments/stripe/webhook", express.raw({ type: "application/json" }));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -24,6 +30,9 @@ app.use("/api/bookings", bookingRoutes);
 
 //TOKEN ROUTES
 app.use("/api/tokens", tokenRoutes);
+
+//PAYMENT ROUTES (S.2.3 - No-Show Handling & Token Re-allocation)
+app.use("/api/payments", paymentRoutes);
 
 app.listen(port, () => {
 	console.log(`Server running at http://localhost:${port}`);
