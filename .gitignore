@@ -6,6 +6,8 @@ Thumbs.db
 *.log
 *.tmp
 *.swp
+
+# Node
 node_modules/
 smart-cafeteria-management
 
@@ -21,7 +23,7 @@ smart-cafeteria-management
 !.env.example
 
 # =====================================================
-# FRONTEND (Next.js + TypeScript + Tailwind)
+# FRONTEND (Next.js + TypeScript)
 # =====================================================
 frontend/node_modules/
 frontend/.next/
@@ -37,9 +39,7 @@ frontend/.cache/
 
 # TypeScript
 frontend/*.tsbuildinfo
-
-# Tailwind
-frontend/.tailwind/
+next-env.d.ts
 
 # =====================================================
 # BACKEND (Node.js + Express + TypeScript)
@@ -78,7 +78,7 @@ forecast_engine/.ruff_cache/
 forecast_engine/.coverage
 forecast_engine/htmlcov/
 
-# ML / data artifacts (generated files ONLY)
+# ML / data artifacts (generated ONLY)
 forecast_engine/data/
 forecast_engine/models/
 forecast_engine/*.pkl
@@ -107,6 +107,9 @@ forecast_engine/*.csv
 # =====================================================
 coverage/
 *.lcov
+playwright-report/
+cypress/videos/
+cypress/screenshots/
 
 # =====================================================
 # PACKAGE MANAGER LOGS

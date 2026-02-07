@@ -17,8 +17,7 @@ export const AuthService = {
 	login: (payload: LoginPayload): Promise<LoginResponse> =>
 		apiPost<LoginResponse>("api/auth/signIn", payload, { skipAuth: true }),
 	// logout]
-	logout: (payload: LoginPayload): Promise<LoginResponse> =>
-		apiPost<LoginResponse>("api/auth/signOut", payload, { skipAuth: true }),
+	logout: (): Promise<{ message: string }> => apiPost<{ message: string }>("api/auth/signOut", {}),
 
 	//  Verify OTP]
 	verifyOtp: (payload: VerifyOtpPayload): Promise<VerifyOtpResponse> =>

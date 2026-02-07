@@ -3,8 +3,17 @@ export interface LoginPayload {
 	password: string;
 }
 
+export interface LoginResponseData {
+	accessToken: string;
+	refreshToken: string;
+	role: string;
+	email?: string;
+}
+
 export interface LoginResponse {
+	success: boolean;
 	message: string;
+	data: LoginResponseData;
 }
 
 export interface VerifyOtpPayload {

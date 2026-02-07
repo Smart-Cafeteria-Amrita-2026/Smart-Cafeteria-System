@@ -36,7 +36,6 @@ export function ResetPasswordForm({
 	register,
 	onSubmit,
 	isLoading,
-	errors,
 	passwordValue = "",
 	confirmPasswordValue = "",
 }: ResetPasswordFormProps) {
