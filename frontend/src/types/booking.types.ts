@@ -67,3 +67,26 @@ export interface Booking {
 	mealType: MealType;
 	members: number;
 }
+
+// Menu item from backend GET /api/bookings/slots/:slotId/menu
+export interface MenuItemData {
+	menu_item_id: number;
+	item_name: string;
+	description: string;
+	price: number;
+	category: string;
+	image_url: string;
+	is_available: boolean;
+	is_vegetarian: boolean;
+	total_stock: number;
+	available_quantity: number;
+	reserved_quantity: number;
+	is_slot_available: boolean;
+	created_at: string;
+}
+
+export interface MenuResponse {
+	success: boolean;
+	message: string;
+	data: MenuItemData[];
+}

@@ -1,6 +1,6 @@
 import { apiGet } from "@/src/lib/api";
 import { API_ROUTES } from "@/src/lib/routes";
-import type { SlotsResponse, MealType, Booking } from "@/src/types/booking.types";
+import type { SlotsResponse, MealType, Booking, MenuResponse } from "@/src/types/booking.types";
 
 interface BookingsResponse {
 	success: boolean;
@@ -26,6 +26,13 @@ export const BookingService = {
 	 */
 	getSlotsByType: (type: MealType): Promise<SlotsResponse> =>
 		apiGet<SlotsResponse>(`${API_ROUTES.BOOKINGS.SLOTS}?meal_type=${type}`, { skipAuth: true }),
+
+	/**
+	 * Get menu items for a specific slot
+	 * Public endpoint - no auth required
+	 */
+	getMenuBySlotId: (slotId: string): Promise<MenuResponse> =>
+		apiGet<MenuResponse>(`${API_ROUTES.BOOKINGS.SLOTS}/${slotId}/menu`, { skipAuth: true }),
 
 	/**
 	 * Get user's bookings

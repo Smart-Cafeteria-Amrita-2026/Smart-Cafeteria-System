@@ -2,8 +2,8 @@
 
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { MenuItemList } from "@/components/menu/MenuItemList";
-import { useBookingStore } from "@/stores/booking.store";
+import { MenuItemList } from "@/src/components/menu/MenuItemList";
+import { useBookingStore } from "@/src/stores/booking.store";
 import { ArrowLeft } from "lucide-react";
 
 export default function MenuPage() {
