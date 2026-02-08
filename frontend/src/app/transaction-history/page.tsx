@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
-import { TransactionList } from "@/components/transactions/TransactionList";
+import { BookingPaymentsTable } from "@/components/transactions/BookingPaymentsTable";
+import { WalletRechargeTable } from "@/components/transactions/WalletRechargeTable";
 import { ArrowLeft, ReceiptText } from "lucide-react";
 
 export default function TransactionHistoryPage() {
@@ -35,8 +36,11 @@ export default function TransactionHistoryPage() {
 				</div>
 			</div>
 
-			{/* Transactions List */}
-			<TransactionList />
+			{/* Booking Payments Section */}
+			<BookingPaymentsTable />
+
+			{/* Wallet Recharge Transactions Section */}
+			<WalletRechargeTable />
 		</div>
 	);
 }

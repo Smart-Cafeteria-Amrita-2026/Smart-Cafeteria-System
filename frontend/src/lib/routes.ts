@@ -13,5 +13,9 @@ export const API_ROUTES = {
 		SEARCH_USERS: "/api/bookings/users/search",
 		MY_BOOKINGS: "/api/bookings/my-bookings",
 		BY_ID: "/api/bookings", // GET/PUT/DELETE /api/bookings/:bookingId
+		PAYMENTS: "/api/bookings/payments",
+	},
+	WALLET: {
+		TRANSACTIONS: "/api/payments/personal-wallet/transactions",
 	},
 };

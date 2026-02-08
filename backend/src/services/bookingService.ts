@@ -24,6 +24,48 @@ import {
 	getCurrentDateIST,
 } from "../utils/dateUtils";
 
+/**
+ * Get booking payments for a specific user
+ */
+export const getBookingPaymentsByUserId = async (
+	userId: string
+): Promise<ServiceResponse<any[]>> => {
+	try {
+		const { data, error } = await service_client
+			.from("booking_payments")
+			.select("*, bookings(booking_reference)")
+			.eq("user_id", userId)
+			.order("created_at", { ascending: false });
+
+		// Flatten the joined booking_reference into each record
+		const flattened = (data || []).map((row: any) => ({
+			...row,
+			booking_reference: row.bookings?.booking_reference ?? null,
+			bookings: undefined,
+		}));
+
+		if (error) {
+			return {
+				success: false,
+				error: error.message,
+				statusCode: STATUS.SERVERERROR,
+			};
+		}
+
+		return {
+			success: true,
+			data: flattened,
+			statusCode: STATUS.SUCCESS,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error occurred",
+			statusCode: STATUS.SERVERERROR,
+		};
+	}
+};
+
 // Helper function to generate booking reference
 export const generateBookingReference = (): string => {
 	const timestamp = Date.now().toString(36).toUpperCase();

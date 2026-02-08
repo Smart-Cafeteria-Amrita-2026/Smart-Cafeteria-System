@@ -6,6 +6,7 @@ import {
 	createBooking,
 	getAvailableSlots,
 	getBookingById,
+	getBookingPaymentsByUserId,
 	getSlotMenuItems,
 	getSlotRecommendations,
 	getUserBookings,
@@ -24,6 +25,45 @@ import {
 	slotRecommendationSchema,
 	updateBookingSchema,
 } from "../validations/booking.schema";
+
+/**
+ * GET /api/bookings/payments
+ */
+export const getBookingPaymentsController = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const userId = req.user?.id;
+
+		if (!userId) {
+			res.status(STATUS.UNAUTHORIZED).json({
+				success: false,
+				error: "User not authenticated",
+			});
+			return;
+		}
+
+		const result = await getBookingPaymentsByUserId(userId);
+
+		if (!result.success) {
+			res.status(result.statusCode).json({
+				success: false,
+				error: result.error,
+			});
+			return;
+		}
+
+		res.status(result.statusCode).json({
+			success: true,
+			message: "Booking payments retrieved successfully",
+			data: result.data,
+		});
+	} catch (error) {
+		res.status(STATUS.SERVERERROR).json({
+			success: false,
+			message: "Internal Server Error",
+			error: error instanceof Error ? error.message : "Unknown error",
+		});
+	}
+};
 
 /**
  * GET /api/bookings/slots

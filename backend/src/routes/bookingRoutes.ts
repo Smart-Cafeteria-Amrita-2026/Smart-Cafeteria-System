@@ -4,6 +4,7 @@ import {
 	createBookingController,
 	getAvailableSlotsController,
 	getBookingByIdController,
+	getBookingPaymentsController,
 	getDemandAnalysisController,
 	getSlotMenuController,
 	getSlotRecommendationsController,
@@ -57,6 +58,12 @@ router.get("/users/search", requireAuth, searchUsersController);
  * GET /api/bookings/my-bookings?status=pending_payment|confirmed|cancelled|completed
  */
 router.get("/my-bookings", requireAuth, getUserBookingsController);
+
+/**
+ * Get booking payments for the authenticated user
+ * GET /api/bookings/payments
+ */
+router.get("/payments", requireAuth, getBookingPaymentsController);
 
 /**
  * POST /api/bookings
