@@ -36,7 +36,11 @@ export function BookingList() {
 	return (
 		<div className="bg-white rounded-xl shadow divide-y overflow-hidden font-sans">
 			{bookings.map((booking) => (
-				<BookingCard key={booking.id} booking={booking} walletBalance={wallet?.balance || 0} />
+				<BookingCard
+					key={booking.id}
+					booking={booking}
+					walletBalance={wallet?.wallet_balance || 0}
+				/>
 			))}
 		</div>
 	);

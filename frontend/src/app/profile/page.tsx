@@ -9,7 +9,7 @@ import { ProfileHeaderSkeleton } from "@/components/profile/ProfileHeaderSkeleto
 import { BookingList } from "@/components/bookings/BookingList";
 import { WalletDashboard } from "@/components/wallet/WalletDashboard";
 import { WalletTransactions } from "@/components/wallet/WalletDisplay";
-import { useWallet } from "@/hooks/wallet/useWallet";
+import { useWallet, useWalletTransactions } from "@/hooks/wallet/useWallet";
 import { ChevronDown, ChevronUp, History, BookCheck, ArrowLeft, Wallet } from "lucide-react";
 
 export default function ProfilePage() {
@@ -30,6 +30,7 @@ export default function ProfilePage() {
 	const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
 
 	const { data: wallet } = useWallet();
+	const { data: transactions } = useWalletTransactions();
 
 	const handleLogout = () => {
 		logout();
@@ -144,7 +145,9 @@ export default function ProfilePage() {
 					</button>
 					{isTransactionsOpen && (
 						<div className="border-t">
-							{wallet?.transactions && <WalletTransactions transactions={wallet.transactions} />}
+							{transactions?.transactions && (
+								<WalletTransactions transactions={transactions.transactions} />
+							)}
 						</div>
 					)}
 				</section>
