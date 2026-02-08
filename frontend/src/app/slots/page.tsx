@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SlotList } from "@/src/components/bookings/SlotList";
 import { useBookingStore } from "@/src/stores/booking.store";
@@ -14,11 +14,21 @@ function SlotsPageContent() {
 
 	const typeFromUrl = searchParams.get("type") as MealType;
 
+	// Wait for Zustand persist hydration before checking store values
+	const [hydrated, setHydrated] = useState(false);
+	useEffect(() => {
+		setHydrated(true);
+	}, []);
+
 	useEffect(() => {
 		if (typeFromUrl) {
 			setMealType(typeFromUrl);
 		}
 	}, [typeFromUrl, setMealType]);
+
+	if (!hydrated) {
+		return <div className="p-8 text-center text-gray-500">Loading booking flow...</div>;
+	}
 
 	if (!mealType && !typeFromUrl) {
 		return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MenuItemList } from "@/src/components/menu/MenuItemList";
 import { useBookingStore } from "@/src/stores/booking.store";
@@ -9,6 +9,16 @@ import { ArrowLeft } from "lucide-react";
 export default function MenuPage() {
 	const router = useRouter();
 	const { mealType, slotId } = useBookingStore();
+
+	// Wait for Zustand persist hydration before checking store values
+	const [hydrated, setHydrated] = useState(false);
+	useEffect(() => {
+		setHydrated(true);
+	}, []);
+
+	if (!hydrated) {
+		return <div className="p-8 text-center text-gray-500">Loading menu...</div>;
+	}
 
 	// Protective redirect: Must have a slot to see menu
 	if (!slotId) {

@@ -9,6 +9,10 @@ export const BOOKING_STATUS = [
 
 export type BookingStatusType = (typeof BOOKING_STATUS)[number];
 
+export const BOOKING_TYPE = ["dine-in", "take-away"] as const;
+
+export type BookingType = (typeof BOOKING_TYPE)[number];
+
 export const MENU_CATEGORY = ["breakfast", "lunch", "dinner", "snacks", "beverages"] as const;
 
 export type MenuCategoryType = (typeof MENU_CATEGORY)[number];
@@ -62,6 +66,7 @@ export interface Booking {
 	primary_user_id: string;
 	is_group_booking: boolean;
 	group_size: number;
+	booking_type: BookingType;
 	booking_status: BookingStatusType;
 	total_amount: number;
 	wallet_balance: number;
@@ -90,6 +95,7 @@ export interface BookingGroupMember {
 export interface CreateBookingRequest {
 	slot_id: number;
 	group_size: number;
+	booking_type?: BookingType;
 	menu_items: {
 		menu_item_id: number;
 		quantity: number;
@@ -147,6 +153,7 @@ export interface BookingConfirmation {
 	payment_deadline: string;
 	group_size: number;
 	is_group_booking: boolean;
+	booking_type: BookingType;
 }
 
 export interface SlotCapacityUpdate {
@@ -154,6 +161,14 @@ export interface SlotCapacityUpdate {
 	current_occupancy: number;
 	remaining_capacity: number;
 	is_full: boolean;
+}
+
+export interface UserSearchResult {
+	id: string;
+	email: string;
+	first_name: string;
+	last_name: string;
+	college_id: string;
 }
 
 // Demand Analysis Types

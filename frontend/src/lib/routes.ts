@@ -8,5 +8,7 @@ export const API_ROUTES = {
 	},
 	BOOKINGS: {
 		SLOTS: "/api/bookings/slots",
+		CREATE: "/api/bookings",
+		SEARCH_USERS: "/api/bookings/users/search",
 	},
 };

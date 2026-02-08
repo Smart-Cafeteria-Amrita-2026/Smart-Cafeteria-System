@@ -14,6 +14,7 @@ import type {
 	SlotMenuItem,
 	SlotRecommendation,
 	UpdateBookingRequest,
+	UserSearchResult,
 } from "../interfaces/booking.types";
 import { type ServiceResponse, STATUS } from "../interfaces/status.types";
 import {
@@ -33,6 +34,54 @@ export const generateBookingReference = (): string => {
 // Helper function to calculate payment deadline (e.g., 30 minutes before slot starts)
 const calculatePaymentDeadline = (slotDate: string, paymentWindowEnd: string): string => {
 	return createISTISOString(slotDate, paymentWindowEnd);
+};
+
+/**
+ * Search users by email prefix for group booking member selection.
+ * Uses ilike for fast prefix matching. Excludes the requesting user.
+ */
+export const searchUsersByEmail = async (
+	email: string,
+	currentUserId: string
+): Promise<ServiceResponse<UserSearchResult[]>> => {
+	try {
+		if (!email || email.trim().length < 2) {
+			return {
+				success: false,
+				error: "Search query must be at least 2 characters",
+				statusCode: STATUS.BADREQUEST,
+			};
+		}
+
+		const { data: users, error } = await service_client
+			.from("users")
+			.select("id, email, first_name, last_name, college_id")
+			.ilike("email", `${email.trim()}%`)
+			.neq("id", currentUserId)
+			.eq("is_active", true)
+			.eq("account_status", "active")
+			.limit(10);
+
+		if (error) {
+			return {
+				success: false,
+				error: error.message,
+				statusCode: STATUS.SERVERERROR,
+			};
+		}
+
+		return {
+			success: true,
+			data: users || [],
+			statusCode: STATUS.SUCCESS,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error occurred",
+			statusCode: STATUS.SERVERERROR,
+		};
+	}
 };
 
 /**
@@ -203,7 +252,8 @@ export const createBooking = async (
 	bookingData: CreateBookingRequest
 ): Promise<ServiceResponse<BookingConfirmation>> => {
 	try {
-		const { slot_id, group_size, menu_items, group_member_ids, total_amount } = bookingData;
+		const { slot_id, group_size, menu_items, group_member_ids, total_amount, booking_type } =
+			bookingData;
 
 		// Validate group members count matches group size
 		const expectedMembers = group_size - 1; // Primary user + other members
@@ -346,6 +396,7 @@ export const createBooking = async (
 				primary_user_id: userId,
 				is_group_booking: group_size > 1,
 				group_size: group_size,
+				booking_type: booking_type || "dine-in",
 				booking_status: "pending_payment",
 				total_amount: totalAmount,
 				payment_deadline: paymentDeadline,
@@ -453,6 +504,7 @@ export const createBooking = async (
 				payment_deadline: paymentDeadline,
 				group_size: group_size,
 				is_group_booking: group_size > 1,
+				booking_type: booking_type || "dine-in",
 			},
 			statusCode: STATUS.CREATED,
 		};

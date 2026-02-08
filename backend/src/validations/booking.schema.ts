@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BOOKING_STATUS, MENU_CATEGORY } from "../interfaces/booking.types";
+import { BOOKING_STATUS, BOOKING_TYPE, MENU_CATEGORY } from "../interfaces/booking.types";
 
 // Menu item selection schema
 const menuItemSelectionSchema = z.object({
@@ -17,6 +17,7 @@ export const createBookingSchema = z.object({
 		.int()
 		.min(1, "Group size must be at least 1")
 		.max(6, "Group size cannot exceed 6"),
+	booking_type: z.enum(BOOKING_TYPE).optional().default("dine-in"),
 	menu_items: z.array(menuItemSelectionSchema).min(1, "At least one menu item must be selected"),
 	group_member_ids: z
 		.array(z.string().uuid("Invalid user ID format"))
@@ -94,6 +95,11 @@ export const bookingIdParamSchema = z.object({
 // Slot ID param schema
 export const slotIdParamSchema = z.object({
 	slotId: z.string().regex(/^\d+$/, "Slot ID must be a number"),
+});
+
+// Search users schema
+export const searchUsersSchema = z.object({
+	email: z.string().min(2, "Search query must be at least 2 characters").max(100),
 });
 
 // Type exports

@@ -9,6 +9,7 @@ import {
 	getSlotMenuItems,
 	getSlotRecommendations,
 	getUserBookings,
+	searchUsersByEmail,
 	updateBooking,
 } from "../services/bookingService";
 import {
@@ -18,6 +19,7 @@ import {
 	createBookingSchema,
 	getAvailableSlotsSchema,
 	menuSearchSchema,
+	searchUsersSchema,
 	slotIdParamSchema,
 	slotRecommendationSchema,
 	updateBookingSchema,
@@ -467,6 +469,53 @@ export const getDemandAnalysisController = async (req: Request, res: Response): 
 		res.status(result.statusCode).json({
 			success: true,
 			message: "Demand analysis retrieved successfully",
+			data: result.data,
+		});
+	} catch (error) {
+		res.status(STATUS.SERVERERROR).json({
+			success: false,
+			message: "Internal Server Error",
+			error: error instanceof Error ? error.message : "Unknown error",
+		});
+	}
+};
+
+/**
+ * GET /api/bookings/users/search?email=<query>
+ * Fast search endpoint for finding users by email prefix (for group booking)
+ */
+export const searchUsersController = async (req: Request, res: Response): Promise<void> => {
+	try {
+		if (!req.user) {
+			res.status(STATUS.UNAUTHORIZED).json({
+				success: false,
+				error: "User not authenticated",
+			});
+			return;
+		}
+
+		const validatedQuery = searchUsersSchema.safeParse(req.query);
+
+		if (!validatedQuery.success) {
+			res.status(STATUS.BADREQUEST).json({
+				success: false,
+				error: `Validation Error: ${validatedQuery.error.message}`,
+			});
+			return;
+		}
+
+		const result = await searchUsersByEmail(validatedQuery.data.email, req.user.id);
+
+		if (!result.success) {
+			res.status(result.statusCode).json({
+				success: false,
+				error: result.error,
+			});
+			return;
+		}
+
+		res.status(result.statusCode).json({
+			success: true,
 			data: result.data,
 		});
 	} catch (error) {

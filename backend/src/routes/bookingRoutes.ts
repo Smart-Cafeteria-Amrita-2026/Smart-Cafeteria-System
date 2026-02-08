@@ -9,6 +9,7 @@ import {
 	getSlotRecommendationsController,
 	getUserBookingsController,
 	searchMenuController,
+	searchUsersController,
 	updateBookingController,
 } from "../controllers/bookingController";
 import { requireAuth } from "../middlewares/auth.middleware";
@@ -44,6 +45,12 @@ router.get("/demand-analysis", getDemandAnalysisController);
  * Body: { slot_id, search_text?, category?, is_vegetarian? }
  */
 router.post("/menu/search", searchMenuController);
+
+/**
+ * GET /api/bookings/users/search?email=<query>
+ * Fast search for users by email prefix (for group booking member selection)
+ */
+router.get("/users/search", requireAuth, searchUsersController);
 
 /**
  * Get user's bookings

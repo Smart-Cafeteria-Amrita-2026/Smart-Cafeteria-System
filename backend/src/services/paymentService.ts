@@ -1079,6 +1079,8 @@ export const confirmWalletRecharge = async (
 		// Retrieve the checkout session from Stripe
 		const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+		const auth_client = getAuthenticatedClient(token);
+
 		// Verify session belongs to this user
 		if (session.metadata?.user_id !== userId) {
 			return {
@@ -1107,7 +1109,7 @@ export const confirmWalletRecharge = async (
 		}
 
 		// Check if this session was already processed (idempotency)
-		const { data: existingTx, error: existingTxError } = await service_client
+		const { data: existingTx, error: existingTxError } = await auth_client
 			.from("wallet_transactions")
 			.select("id")
 			.eq("session_id", sessionId)
@@ -1117,7 +1119,7 @@ export const confirmWalletRecharge = async (
 
 		if (existingTx) {
 			// Already processed – return current balance
-			const { data: user } = await service_client
+			const { data: user } = await auth_client
 				.from("users")
 				.select("wallet_balance")
 				.eq("id", userId)
@@ -1138,7 +1140,7 @@ export const confirmWalletRecharge = async (
 		const rechargeAmount = (session.amount_total || 0) / 100; // Convert from paise to rupees
 
 		// Get current wallet balance
-		const { data: currentUser, error: userError } = await service_client
+		const { data: currentUser, error: userError } = await auth_client
 			.from("users")
 			.select("wallet_balance")
 			.eq("id", userId)
@@ -1155,7 +1157,7 @@ export const confirmWalletRecharge = async (
 		const newBalance = Number(currentUser.wallet_balance) + rechargeAmount;
 
 		// Insert wallet_transactions record
-		const { data: transaction, error: txError } = await service_client
+		const { data: transaction, error: txError } = await auth_client
 			.from("wallet_transactions")
 			.insert({
 				user_id: userId,
@@ -1176,7 +1178,7 @@ export const confirmWalletRecharge = async (
 		}
 
 		// Update wallet_balance in users table
-		const { error: updateError } = await service_client
+		const { error: updateError } = await auth_client
 			.from("users")
 			.update({ wallet_balance: newBalance })
 			.eq("id", userId);

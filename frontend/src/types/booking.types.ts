@@ -90,3 +90,47 @@ export interface MenuResponse {
 	message: string;
 	data: MenuItemData[];
 }
+
+// User search result for group booking member selection
+export interface UserSearchResult {
+	id: string;
+	email: string;
+	first_name: string;
+	last_name: string;
+	college_id: string;
+}
+
+export interface UserSearchResponse {
+	success: boolean;
+	data: UserSearchResult[];
+}
+
+export type BookingType = "dine-in" | "take-away";
+
+// Create booking request payload
+export interface CreateBookingPayload {
+	slot_id: number;
+	group_size: number;
+	booking_type?: BookingType;
+	menu_items: {
+		menu_item_id: number;
+		quantity: number;
+	}[];
+	group_member_ids?: string[];
+	total_amount: number;
+}
+
+export interface CreateBookingResponse {
+	success: boolean;
+	message: string;
+	data: {
+		booking_id: number;
+		booking_reference: string;
+		slot_details: SlotData;
+		total_amount: number;
+		payment_deadline: string;
+		group_size: number;
+		is_group_booking: boolean;
+		booking_type: BookingType;
+	};
+}

@@ -1,6 +1,14 @@
-import { apiGet } from "@/src/lib/api";
+import { apiGet, apiPost } from "@/src/lib/api";
 import { API_ROUTES } from "@/src/lib/routes";
-import type { SlotsResponse, MealType, Booking, MenuResponse } from "@/src/types/booking.types";
+import type {
+	SlotsResponse,
+	MealType,
+	Booking,
+	MenuResponse,
+	UserSearchResponse,
+	CreateBookingPayload,
+	CreateBookingResponse,
+} from "@/src/types/booking.types";
 
 interface BookingsResponse {
 	success: boolean;
@@ -33,6 +41,22 @@ export const BookingService = {
 	 */
 	getMenuBySlotId: (slotId: string): Promise<MenuResponse> =>
 		apiGet<MenuResponse>(`${API_ROUTES.BOOKINGS.SLOTS}/${slotId}/menu`, { skipAuth: true }),
+
+	/**
+	 * Search users by email for group booking member selection
+	 * Protected endpoint - requires auth
+	 */
+	searchUsersByEmail: (email: string): Promise<UserSearchResponse> =>
+		apiGet<UserSearchResponse>(
+			`${API_ROUTES.BOOKINGS.SEARCH_USERS}?email=${encodeURIComponent(email)}`
+		),
+
+	/**
+	 * Create a new booking
+	 * Protected endpoint - requires auth
+	 */
+	createBooking: (payload: CreateBookingPayload): Promise<CreateBookingResponse> =>
+		apiPost<CreateBookingResponse>(API_ROUTES.BOOKINGS.CREATE, payload),
 
 	/**
 	 * Get user's bookings
