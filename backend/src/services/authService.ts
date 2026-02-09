@@ -51,7 +51,7 @@ export const signIn = async (validatedUser: SignInRequest): Promise<ServiceRespo
   });
 
   if (authError) return { success: false, error: authError.message, statusCode: STATUS.BADREQUEST };
-  if (!authData.user) return { success: false, error: 'User creation failed unexpectedly', statusCode: STATUS.SERVERERROR };
+  if (!authData.user) return { success: false, error: 'Authentication failed unexpectedly', statusCode: STATUS.SERVERERROR };
 
 
   return { success: true, statusCode: STATUS.ACCEPTED, data: { accessToken: authData.session.access_token, refreshToken: authData.session.refresh_token, role: authData.user.user_metadata.role, email: authData.user.app_metadata.email } };
@@ -69,28 +69,28 @@ export const logOut = async (accessToken: string): Promise<ServiceResponse<void>
 }
 
 export const requestPasswordReset = async (email: string): Promise<void> => {
-    const { error } = await service_client.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.FRONTEND_URL}/reset-password`, 
-    });
+  const { error } = await service_client.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.FRONTEND_URL}/reset-password`,
+  });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+  if (error) {
+    throw new Error(error.message);
+  }
 }
 
 export const updateUserPassword = async (accessToken: string, newPassword: string): Promise<void> => {
 
   const { data: { user }, error } = await service_client.auth.getUser(accessToken);
   if (error || !user) {
-      throw new Error("Invalid or expired session token");
+    throw new Error("Invalid or expired session token");
   }
-  
+
   const { error: updateError } = await service_client.auth.admin.updateUserById(
-      user.id,
-      { password: newPassword }
-    );
+    user.id,
+    { password: newPassword }
+  );
 
   if (updateError) {
-      throw new Error(updateError.message);
-    }
+    throw new Error(updateError.message);
+  }
 }

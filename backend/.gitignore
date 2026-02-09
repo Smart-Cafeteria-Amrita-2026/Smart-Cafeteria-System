@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# env
+.env
+.env.*
+
+# testing
+coverage/
+test-output.txt
+test_output.txt
+test_results.txt
+type-check-error.txt
+/jest-cache
+
+# logs
+logs/
+*.log
+.pnpm-debug.log*
+
+# build output
+dist/
+build/
+
+# editor & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
