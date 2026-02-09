@@ -13,6 +13,7 @@ import {
 	ArrowRight,
 } from "lucide-react";
 import type { MyBookingStatus } from "@/src/types/myBookings.types";
+import { BookingTokenBadge } from "./BookingTokenBadge";
 
 interface Props {
 	bookingId: number;
@@ -192,12 +193,26 @@ export function MyBookingCard({
 					router.push(`/my-bookings/${bookingId}`);
 				}
 			}}
-			className="group flex items-stretch rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all overflow-hidden cursor-pointer w-full text-left"
+			className="group flex items-stretch rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all cursor-pointer w-full text-left overflow-hidden"
 		>
-			{/* Left: content area */}
-			<div className="flex-1 p-4 sm:p-5 space-y-2.5 min-w-0">
+			{/* Left: content area with View Details hover */}
+			<div className="relative flex-1 p-4 sm:p-5 space-y-2.5 min-w-0 min-h-[116px]">
+				{/* Blue overlay that appears on hover - covers entire left area */}
+				<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+
+				{/* View Details text - centered, visible on hover */}
+				<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+					<div className="flex items-center gap-2 text-white font-bold">
+						<span className="text-sm sm:text-base">View Details</span>
+						<ArrowRight
+							size={20}
+							className="transition-transform duration-300 group-hover:translate-x-1"
+						/>
+					</div>
+				</div>
+
 				{/* Row 1: Reference + Status badge */}
-				<div className="flex flex-wrap items-center gap-2">
+				<div className="relative z-0 flex flex-wrap items-center gap-2">
 					<div className="flex items-center gap-1.5 min-w-0">
 						<Hash size={14} className="shrink-0 text-gray-400" />
 						<span className="text-sm font-bold text-gray-900 truncate">{bookingReference}</span>
@@ -210,7 +225,7 @@ export function MyBookingCard({
 				</div>
 
 				{/* Row 2: Details — responsive grid */}
-				<div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-gray-600">
+				<div className="relative z-0 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-gray-600">
 					<div className="flex items-center gap-1.5">
 						<Clock size={14} className="shrink-0 text-indigo-400" />
 						<span className="font-medium">{slotName}</span>
@@ -234,53 +249,45 @@ export function MyBookingCard({
 						{totalAmount.toFixed(2)}
 					</div>
 				</div>
+
+				{/* Row 3: Token badge or pending message - min-height ensures consistent card size */}
+				<div className="relative z-0 min-h-[24px]">
+					{bookingStatus === "pending_payment" ? (
+						<span className="text-xs text-gray-400 italic">Token generation pending</span>
+					) : (
+						<BookingTokenBadge bookingReference={bookingReference} bookingStatus={bookingStatus} />
+					)}
+				</div>
 			</div>
 
-			{/* Right: Action button + hover overlay — vertically centered */}
-			<div className="relative flex items-center justify-center px-3 sm:px-5 border-l bg-gray-50/60 w-[220px] sm:w-[260px] shrink-0 overflow-hidden transition-all duration-300">
-				{/* Blue overlay that appears on hover */}
-				<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-				{/* View Details text - centered, visible on hover */}
-				<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-					<div className="flex items-center gap-2 text-white font-bold">
-						<span className="text-sm sm:text-base">View Details</span>
-						<ArrowRight
-							size={20}
-							className="transition-transform duration-300 group-hover:translate-x-1"
-						/>
-					</div>
-				</div>
-
-				{/* Action button - hidden on hover */}
-				<div className="relative z-0 group-hover:opacity-0 transition-opacity duration-300">
-					<button
-						type="button"
-						disabled={btn.disabled || isSettling}
-						onClick={(e) => {
-							e.stopPropagation();
-							if (btn.disabled || isSettling) return;
-							if (btn.action === "pay") {
-								onPayBill();
-							} else if (btn.action === "wallet") {
-								onAddMoney();
-							}
-						}}
-						className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${BUTTON_VARIANT_STYLES[btn.variant]}`}
-					>
-						{isSettling ? (
-							<span className="flex items-center gap-1.5">
-								<span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-								Settling...
-							</span>
-						) : (
-							<>
-								<BtnIcon size={16} />
-								{btn.label}
-							</>
-						)}
-					</button>
-				</div>
+			{/* Right: Action button — vertically centered, fixed width */}
+			<div className="flex items-center justify-center px-3 sm:px-5 border-l bg-gray-50/60 shrink-0 min-w-[140px]">
+				<button
+					type="button"
+					disabled={btn.disabled || isSettling}
+					onClick={(e) => {
+						e.stopPropagation();
+						if (btn.disabled || isSettling) return;
+						if (btn.action === "pay") {
+							onPayBill();
+						} else if (btn.action === "wallet") {
+							onAddMoney();
+						}
+					}}
+					className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${BUTTON_VARIANT_STYLES[btn.variant]}`}
+				>
+					{isSettling ? (
+						<span className="flex items-center gap-1.5">
+							<span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+							Settling...
+						</span>
+					) : (
+						<>
+							<BtnIcon size={16} />
+							{btn.label}
+						</>
+					)}
+				</button>
 			</div>
 		</div>
 	);

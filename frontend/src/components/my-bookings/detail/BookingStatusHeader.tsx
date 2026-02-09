@@ -57,11 +57,6 @@ function getButtonState(
 		return { label: STATUS_LABEL[status], disabled: true, variant: "muted", icon: "lock" };
 	}
 
-	// Disable button when wallet balance already covers the total amount
-	if (totalAmount === walletBalance) {
-		return { label: "Funded", disabled: true, variant: "muted", icon: "lock" };
-	}
-
 	const now = new Date();
 	const windowStart = toDateWithTime(slotDate, paymentWindowStart);
 	const windowEnd = toDateWithTime(slotDate, paymentWindowEnd);
@@ -81,6 +76,11 @@ function getButtonState(
 			icon: "creditCard",
 			action: "pay",
 		};
+	}
+
+	// Funded: wallet covers total but payment window hasn't started yet
+	if (totalAmount === walletBalance && !inPaymentWindow) {
+		return { label: "Funded", disabled: true, variant: "muted", icon: "lock" };
 	}
 
 	// Add Money: before window starts OR during window with insufficient balance

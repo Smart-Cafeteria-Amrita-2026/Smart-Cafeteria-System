@@ -12,6 +12,7 @@ import { BookingGroupMembersSection } from "./BookingGroupMembersSection";
 import { BookingPaymentSection } from "./BookingPaymentSection";
 import { CancelBookingModal } from "./CancelBookingModal";
 import { AddMoneyModal } from "./AddMoneyModal";
+import { BookingTokenSection } from "./BookingTokenSection";
 
 interface Props {
 	bookingId: number;
@@ -68,6 +69,12 @@ export function BookingDetailView({ bookingId }: Props) {
 				onAddMoney={() => setShowAddMoneyModal(true)}
 				onPayBill={handlePayBill}
 				isSettling={isSettling}
+			/>
+
+			{/* Token Section — shown when a token exists for this booking */}
+			<BookingTokenSection
+				bookingReference={booking.booking_reference}
+				bookingStatus={booking.booking_status}
 			/>
 
 			{/* Booking Info (slot, date, time, type) */}

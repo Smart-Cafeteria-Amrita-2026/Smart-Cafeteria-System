@@ -161,3 +161,18 @@ export interface TokenReassignment {
 	new_queue_position: number;
 	notified: boolean;
 }
+
+// User Queue Status (for SSE real-time updates)
+export interface UserQueueStatus {
+	token_id: number;
+	token_number: string;
+	token_status: TokenStatusType;
+	counter_id: number;
+	counter_name: string;
+	queue_position: number;
+	estimated_wait_time: number;
+	currently_serving: {
+		token_number: string;
+	} | null;
+	tokens_ahead: number;
+}

@@ -12,6 +12,7 @@ import type {
 	TokenReassignment,
 	TokenStatusType,
 	TokenWithDetails,
+	UserQueueStatus,
 } from "../interfaces/token.types";
 import { type ServiceResponse, STATUS } from "../interfaces/status.types";
 import {
@@ -1313,6 +1314,130 @@ export const getTokenByBookingReference = async (
 						last_name: m.users.last_name,
 					})
 				),
+			},
+			statusCode: STATUS.SUCCESS,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error occurred",
+			statusCode: STATUS.SERVERERROR,
+		};
+	}
+};
+
+// ============================================
+// Real-time Queue Status Service (for SSE)
+// ============================================
+
+/**
+ * Get real-time queue status for a specific token
+ * Used by SSE endpoint for live queue updates
+ */
+export const getUserQueueStatus = async (
+	tokenId: number
+): Promise<ServiceResponse<UserQueueStatus>> => {
+	try {
+		// Get token with counter details
+		const { data: tokenData, error: tokenError } = await service_client
+			.from("tokens")
+			.select(`
+				*,
+				service_counters (*)
+			`)
+			.eq("token_id", tokenId)
+			.single();
+
+		if (tokenError || !tokenData) {
+			return {
+				success: false,
+				error: "Token not found",
+				statusCode: STATUS.NOTFOUND,
+			};
+		}
+
+		// Only return queue status for active or serving tokens
+		if (!["active", "serving"].includes(tokenData.token_status)) {
+			return {
+				success: false,
+				error: "Token is not in queue (not active or serving)",
+				statusCode: STATUS.BADREQUEST,
+			};
+		}
+
+		if (!tokenData.counter_id) {
+			// Token is active but not yet assigned to a counter - return pending status
+			return {
+				success: true,
+				data: {
+					token_id: tokenData.token_id,
+					token_number: tokenData.token_number,
+					token_status: tokenData.token_status,
+					counter_id: 0,
+					counter_name: "Awaiting Assignment",
+					queue_position: -1, // -1 indicates not yet assigned
+					estimated_wait_time: 0,
+					currently_serving: null,
+					tokens_ahead: 0,
+				},
+				statusCode: STATUS.SUCCESS,
+			};
+		}
+
+		// Get all tokens at this counter that are active or serving, ordered by activation time
+		const { data: counterTokens, error: queueError } = await service_client
+			.from("tokens")
+			.select("token_id, token_number, token_status, activated_at")
+			.eq("counter_id", tokenData.counter_id)
+			.in("token_status", ["active", "serving"])
+			.order("activated_at", { ascending: true });
+
+		if (queueError) {
+			return {
+				success: false,
+				error: "Failed to fetch queue data",
+				statusCode: STATUS.SERVERERROR,
+			};
+		}
+
+		// Find the currently serving token
+		const servingToken = counterTokens?.find((t) => t.token_status === "serving") || null;
+
+		// Find this token's position in the queue
+		const activeTokens = counterTokens?.filter((t) => t.token_status === "active") || [];
+		const position = activeTokens.findIndex((t) => t.token_id === tokenId);
+
+		// Queue position: 0 if serving, otherwise 1-based position among active tokens
+		let queuePosition: number;
+		let tokensAhead: number;
+
+		if (tokenData.token_status === "serving") {
+			queuePosition = 0;
+			tokensAhead = 0;
+		} else {
+			queuePosition = position === -1 ? activeTokens.length + 1 : position + 1;
+			// Tokens ahead = position - 1 (if serving token exists, that's already being served)
+			tokensAhead = Math.max(0, queuePosition - 1);
+			// If there's a serving token, add 1 to tokens ahead (the serving one)
+			if (servingToken) {
+				tokensAhead += 1;
+			}
+		}
+
+		const estimatedWaitTime = calculateEstimatedWaitTime(queuePosition);
+
+		return {
+			success: true,
+			data: {
+				token_id: tokenData.token_id,
+				token_number: tokenData.token_number,
+				token_status: tokenData.token_status,
+				counter_id: tokenData.counter_id,
+				counter_name: tokenData.service_counters?.counter_name || "Unknown Counter",
+				queue_position: queuePosition,
+				estimated_wait_time: estimatedWaitTime,
+				currently_serving: servingToken ? { token_number: servingToken.token_number } : null,
+				tokens_ahead: tokensAhead,
 			},
 			statusCode: STATUS.SUCCESS,
 		};

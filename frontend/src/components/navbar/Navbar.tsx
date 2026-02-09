@@ -27,7 +27,6 @@ export function Navbar() {
 							SC
 						</span>
 						<span className="hidden sm:inline">Smart Cafeteria</span>
-						<span className="sm:hidden">SC</span>
 					</Link>
 
 					{/* Right side */}

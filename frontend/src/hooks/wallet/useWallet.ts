@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { WalletService } from "../../services/wallet/WalletService";
+import { TokenService } from "../../services/token/TokenService";
 import { toast } from "react-hot-toast";
 
 /** Fetch the authenticated user's wallet balance */
@@ -95,11 +96,20 @@ export function useSettleBill() {
 
 	return useMutation({
 		mutationFn: (bookingId: number) => WalletService.settleBill(bookingId),
-		onSuccess: () => {
+		onSuccess: async (_data, bookingId) => {
 			toast.success("Bill settled successfully!");
 			queryClient.invalidateQueries({ queryKey: ["wallet"] });
 			queryClient.invalidateQueries({ queryKey: ["bookingDetail"] });
 			queryClient.invalidateQueries({ queryKey: ["myBookings"] });
+
+			// Automatically generate a token after successful bill settlement
+			try {
+				await TokenService.generateToken(bookingId);
+				toast.success("Token generated!");
+				queryClient.invalidateQueries({ queryKey: ["bookingToken"] });
+			} catch {
+				// Token may already exist or generation may fail — don't block the flow
+			}
 		},
 		onError: (error: unknown) => {
 			const err = error as { response?: { data?: { message?: string; error?: string } } };

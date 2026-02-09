@@ -12,6 +12,7 @@ import {
 	markTokenServedController,
 	reopenCounterController,
 } from "../controllers/tokenController";
+import { queueStatusSSEController } from "../controllers/queueSSE.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = Router();
@@ -31,6 +32,13 @@ router.get("/queue/status", getQueueStatusController);
  * Get all service counters with queue information
  */
 router.get("/counters", getServiceCountersController);
+
+/**
+ * GET /api/tokens/queue/live?token_id=X
+ * SSE endpoint for real-time queue status updates
+ * Streams queue position updates every 3 seconds for active/serving tokens
+ */
+router.get("/queue/live", queueStatusSSEController);
 
 // ============================================
 // AUTHENTICATED USER ROUTES
