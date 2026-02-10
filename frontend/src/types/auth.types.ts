@@ -17,11 +17,34 @@ export interface LoginResponse {
 }
 
 export interface VerifyOtpPayload {
+	email: string;
 	otp: string;
 }
 
 export interface VerifyOtpResponse {
-	token: string;
+	success: boolean;
+	message: string;
+	data: { verified: boolean };
+}
+
+export interface GenerateOtpPayload {
+	email: string;
+}
+
+export interface GenerateOtpResponse {
+	success: boolean;
+	message: string;
+	data: { expiresInSeconds: number };
+}
+
+export interface ResendOtpPayload {
+	email: string;
+}
+
+export interface ResendOtpResponse {
+	success: boolean;
+	message: string;
+	data: { expiresInSeconds: number };
 }
 
 export interface RegisterPayload {

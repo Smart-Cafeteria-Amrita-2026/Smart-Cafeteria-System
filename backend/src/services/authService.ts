@@ -92,7 +92,7 @@ export const signIn = async (
 			accessToken: authData.session.access_token,
 			refreshToken: authData.session.refresh_token,
 			role: authData.user.user_metadata.role,
-			email: authData.user.app_metadata.email,
+			email: authData.user.email,
 		},
 	};
 };

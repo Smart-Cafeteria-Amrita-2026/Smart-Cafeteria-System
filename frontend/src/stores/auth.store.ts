@@ -3,8 +3,10 @@ import { persist } from "zustand/middleware";
 
 interface AuthStoreState {
 	token: string | null;
+	email: string | null;
 	isHydrated: boolean;
 	setToken: (token: string | null) => void;
+	setEmail: (email: string | null) => void;
 	logout: () => void;
 	setHydrated: () => void;
 }
@@ -13,11 +15,14 @@ export const useAuthStore = create<AuthStoreState>()(
 	persist(
 		(set) => ({
 			token: null,
+			email: null,
 			isHydrated: false,
 
 			setToken: (token) => set({ token }),
 
-			logout: () => set({ token: null }),
+			setEmail: (email) => set({ email }),
+
+			logout: () => set({ token: null, email: null }),
 
 			setHydrated: () => set({ isHydrated: true }),
 		}),
@@ -32,6 +37,7 @@ export const useAuthStore = create<AuthStoreState>()(
 			// only persist what is needed
 			partialize: (state) => ({
 				token: state.token,
+				email: state.email,
 			}),
 		}
 	)

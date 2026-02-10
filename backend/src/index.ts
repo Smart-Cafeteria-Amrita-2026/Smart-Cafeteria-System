@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import authRoutes from "./routes/authRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
+import otpRoutes from "./routes/otpRoutes";
 import tokenRoutes from "./routes/tokenRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 
@@ -29,6 +30,9 @@ app.use(cookieParser());
 
 //AUTH ROUTES
 app.use("/api/auth", authRoutes);
+
+//OTP ROUTES
+app.use("/api/otp", otpRoutes);
 
 //BOOKING ROUTES
 app.use("/api/bookings", bookingRoutes);

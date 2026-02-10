@@ -4,6 +4,10 @@ import type {
 	LoginResponse,
 	VerifyOtpPayload,
 	VerifyOtpResponse,
+	GenerateOtpPayload,
+	GenerateOtpResponse,
+	ResendOtpPayload,
+	ResendOtpResponse,
 	RegisterPayload,
 	RegisterResponse,
 	ForgotPasswordPayload,
@@ -21,7 +25,15 @@ export const AuthService = {
 
 	//  Verify OTP]
 	verifyOtp: (payload: VerifyOtpPayload): Promise<VerifyOtpResponse> =>
-		apiPost<VerifyOtpResponse>("api/auth/verify-otp", payload),
+		apiPost<VerifyOtpResponse>("api/otp/verify", payload),
+
+	//  Generate OTP
+	generateOtp: (payload: GenerateOtpPayload): Promise<GenerateOtpResponse> =>
+		apiPost<GenerateOtpResponse>("api/otp/generate", payload),
+
+	//  Resend OTP
+	resendOtp: (payload: ResendOtpPayload): Promise<ResendOtpResponse> =>
+		apiPost<ResendOtpResponse>("api/otp/resend", payload),
 
 	register: (payload: RegisterPayload): Promise<RegisterResponse> =>
 		apiPost<RegisterResponse>("api/auth/register", payload, {
