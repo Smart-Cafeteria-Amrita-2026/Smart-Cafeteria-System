@@ -67,4 +67,21 @@ backend/
 - `pnpm build`: Compile TypeScript to JavaScript in `dist/`
 - `pnpm start`: Run compiled server from `dist/index.js`
 
+## Monitoring 🔧
+- Metrics endpoint: `/metrics` (Prometheus exposition format)
+- Metrics provided:
+  - `smart_cafeteria_*` (default process metrics)
+  - `http_requests_total{method,route,status_code}`
+  - `http_request_duration_seconds_bucket`, `_sum`, `_count`
+
+Run local monitoring with Docker Compose (from project `monitoring/` folder):
+1. Build backend and monitoring images: `pnpm --filter backend install && pnpm --filter backend build`
+2. Start stack: `docker compose up --build`
+
+Access:
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000 (anonymous viewing enabled)
+- Example dashboard: "Smart Cafeteria HTTP Metrics" (auto-provisioned)
+
+
 
