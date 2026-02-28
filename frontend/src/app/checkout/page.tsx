@@ -8,12 +8,34 @@ import { useBookingStore } from "@/src/stores/booking.store";
 import { GroupMemberSearch } from "@/src/components/bookings/GroupMemberSearch";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { NUTRITION_DATA } from "@/lib/nutrition.constants";
 
 export default function CheckoutPage() {
 	const router = useRouter();
 	const { items, totalAmount } = useCartStore();
 	const { token } = useAuthStore();
 	const { slotId, groupMembers, getSelectedSlot } = useBookingStore();
+
+	// Helper to find nutrition info with item name normalization
+	const getNutritionInfo = (itemName: string) => {
+		if (!itemName) return null;
+
+		// Try direct match first
+		if (NUTRITION_DATA[itemName]) return NUTRITION_DATA[itemName];
+
+		// Try normalized: lowercase and replace spaces/underscores with hyphens
+		const normalized = itemName
+			.toLowerCase()
+			.trim()
+			.replace(/[\s_]+/g, "-");
+		if (NUTRITION_DATA[normalized]) return NUTRITION_DATA[normalized];
+
+		// Case-insensitive search
+		const entry = Object.entries(NUTRITION_DATA).find(
+			([key]) => key.toLowerCase() === itemName.toLowerCase().trim()
+		);
+		return entry ? entry[1] : null;
+	};
 
 	// Check if this is a booking edit flow
 	const [editBookingId, setEditBookingId] = useState<number | null>(null);
@@ -115,22 +137,42 @@ export default function CheckoutPage() {
 
 				{/* Items */}
 				<div className="px-6 divide-y divide-gray-100">
-					{items.map((item) => (
-						<div key={item.id} className="grid grid-cols-12 items-center py-3 text-sm">
-							<span className="col-span-5 font-medium text-gray-900 truncate pr-2">
-								{item.name}
-							</span>
-							<span className="col-span-2 text-center">
-								<span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-gray-100 text-xs font-bold text-gray-700">
-									{item.quantity}
+					{items.map((item) => {
+						const nutrition = getNutritionInfo(item.name);
+						return (
+							<div key={item.id} className="grid grid-cols-12 items-start py-4 text-sm">
+								<div className="col-span-5 pr-2">
+									<p className="font-bold text-gray-900 truncate">{item.name}</p>
+									{nutrition && (
+										<div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-gray-400 font-medium">
+											<span className="flex items-center gap-0.5">
+												<span className="text-[12px]">🔥</span> {nutrition.calories}{" "}
+												<span className="text-[8px] uppercase opacity-60">kcal</span>
+											</span>
+											<span className="flex items-center gap-0.5">
+												<span className="text-[12px]">🥖</span> {nutrition.carbs}g
+											</span>
+											<span className="flex items-center gap-0.5">
+												<span className="text-[12px]">🍗</span> {nutrition.protein}g
+											</span>
+											<span className="flex items-center gap-0.5">
+												<span className="text-[12px]">🥑</span> {nutrition.fat}g
+											</span>
+										</div>
+									)}
+								</div>
+								<span className="col-span-2 text-center pt-1">
+									<span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-gray-100 text-xs font-bold text-gray-700">
+										{item.quantity}
+									</span>
 								</span>
-							</span>
-							<span className="col-span-2 text-right text-gray-500">₹{item.price}</span>
-							<span className="col-span-3 text-right font-semibold text-gray-900">
-								₹{(item.price * item.quantity).toFixed(2)}
-							</span>
-						</div>
-					))}
+								<span className="col-span-2 text-right text-gray-500 pt-1">₹{item.price}</span>
+								<span className="col-span-3 text-right font-semibold text-gray-900 pt-1">
+									₹{(item.price * item.quantity).toFixed(2)}
+								</span>
+							</div>
+						);
+					})}
 				</div>
 
 				{/* Total */}
