@@ -1,7 +1,7 @@
-"use client";
-
-import { Ticket, MapPin, Clock, Users, Hash, CircleDot } from "lucide-react";
+import { Ticket, MapPin, Clock, Users, Hash, CircleDot, MessageSquarePlus } from "lucide-react";
 import type { TokenStatusType, TokenWithDetails } from "@/src/types/token.types";
+import { useState } from "react";
+import { FeedbackModal } from "./FeedbackModal";
 
 interface Props {
 	token: TokenWithDetails;
@@ -47,111 +47,139 @@ function formatTime(time: string): string {
  * Used inside the booking detail page (/my-bookings/[id]).
  */
 export function TokenDetailCard({ token }: Props) {
-	return (
-		<div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
-			{/* Colored top bar */}
-			<div className={`h-1.5 ${STATUS_BAR_COLOR[token.token_status]}`} />
+	const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-			<div className="p-4 sm:p-5 space-y-4">
-				{/* Header: Token number + status */}
-				<div className="flex items-center justify-between gap-3 flex-wrap">
-					<div className="flex items-center gap-2 min-w-0">
-						<div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
-							<Ticket size={18} />
+	const isServed = token.token_status === "served";
+
+	return (
+		<>
+			<div className="rounded-2xl border bg-white shadow-sm overflow-hidden transition-all hover:shadow-md">
+				{/* Colored top bar */}
+				<div className={`h-1.5 ${STATUS_BAR_COLOR[token.token_status]}`} />
+
+				<div className="p-4 sm:p-5 space-y-4">
+					{/* Header: Token number + status */}
+					<div className="flex items-center justify-between gap-3 flex-wrap">
+						<div className="flex items-center gap-2 min-w-0">
+							<div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
+								<Ticket size={18} />
+							</div>
+							<span className="text-lg sm:text-xl font-black text-gray-900 tracking-wide truncate">
+								{token.token_number}
+							</span>
 						</div>
-						<span className="text-lg sm:text-xl font-black text-gray-900 tracking-wide truncate">
-							{token.token_number}
+						<span
+							className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${STATUS_STYLES[token.token_status]}`}
+						>
+							{STATUS_LABEL[token.token_status]}
 						</span>
 					</div>
-					<span
-						className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${STATUS_STYLES[token.token_status]}`}
-					>
-						{STATUS_LABEL[token.token_status]}
-					</span>
-				</div>
 
-				{/* Details grid */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-					{/* Counter assignment */}
-					{token.counter_details && (
-						<div className="flex items-center gap-2 text-sm text-gray-600">
-							<MapPin size={15} className="shrink-0 text-gray-400" />
-							<span className="font-medium">{token.counter_details.counter_name}</span>
-						</div>
-					)}
+					{/* Details grid */}
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+						{/* Counter assignment */}
+						{token.counter_details && (
+							<div className="flex items-center gap-2 text-sm text-gray-600">
+								<MapPin size={15} className="shrink-0 text-gray-400" />
+								<span className="font-medium">{token.counter_details.counter_name}</span>
+							</div>
+						)}
 
-					{/* Queue position */}
-					{token.queue_position !== null && token.queue_position > 0 && (
-						<div className="flex items-center gap-2 text-sm text-gray-600">
-							<Hash size={15} className="shrink-0 text-gray-400" />
-							<span className="font-medium">Queue Position: {token.queue_position}</span>
-						</div>
-					)}
+						{/* Queue position */}
+						{token.queue_position !== null && token.queue_position > 0 && (
+							<div className="flex items-center gap-2 text-sm text-gray-600">
+								<Hash size={15} className="shrink-0 text-gray-400" />
+								<span className="font-medium">Queue Position: {token.queue_position}</span>
+							</div>
+						)}
 
-					{/* Estimated wait */}
-					{token.estimated_wait_time !== null && token.estimated_wait_time > 0 && (
-						<div className="flex items-center gap-2 text-sm text-gray-600">
-							<Clock size={15} className="shrink-0 text-gray-400" />
-							<span className="font-medium">~{token.estimated_wait_time} min wait</span>
-						</div>
-					)}
+						{/* Estimated wait */}
+						{token.estimated_wait_time !== null && token.estimated_wait_time > 0 && (
+							<div className="flex items-center gap-2 text-sm text-gray-600">
+								<Clock size={15} className="shrink-0 text-gray-400" />
+								<span className="font-medium">~{token.estimated_wait_time} min wait</span>
+							</div>
+						)}
 
-					{/* Slot info */}
-					{token.slot_details && (
-						<div className="flex items-center gap-2 text-sm text-gray-600">
-							<CircleDot size={15} className="shrink-0 text-gray-400" />
-							<span className="font-medium">
-								{token.slot_details.slot_name} &middot; {formatTime(token.slot_details.start_time)}{" "}
-								– {formatTime(token.slot_details.end_time)}
-							</span>
-						</div>
-					)}
-				</div>
-
-				{/* Group members */}
-				{token.group_members.length > 0 && (
-					<div className="pt-2 border-t">
-						<div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1.5">
-							<Users size={13} />
-							<span className="font-semibold uppercase tracking-wide">Group Members</span>
-						</div>
-						<div className="flex flex-wrap gap-1.5">
-							{token.group_members.map((m) => (
-								<span
-									key={m.user_id}
-									className="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"
-								>
-									{m.first_name} {m.last_name}
+						{/* Slot info */}
+						{token.slot_details && (
+							<div className="flex items-center gap-2 text-sm text-gray-600">
+								<CircleDot size={15} className="shrink-0 text-gray-400" />
+								<span className="font-medium">
+									{token.slot_details.slot_name} &middot;{" "}
+									{formatTime(token.slot_details.start_time)} –{" "}
+									{formatTime(token.slot_details.end_time)}
 								</span>
-							))}
-						</div>
+							</div>
+						)}
 					</div>
-				)}
 
-				{/* Activation / served timestamps */}
-				{(token.activated_at || token.served_at) && (
-					<div className="pt-2 border-t flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400">
-						{token.activated_at && (
-							<span>
-								Activated:{" "}
-								{new Date(token.activated_at).toLocaleString("en-IN", {
-									dateStyle: "medium",
-									timeStyle: "short",
-								})}
-							</span>
-						)}
-						{token.served_at && (
-							<span>
-								Served:{" "}
-								{new Date(token.served_at).toLocaleString("en-IN", {
-									dateStyle: "medium",
-									timeStyle: "short",
-								})}
-							</span>
-						)}
-					</div>
-				)}
+					{/* Group members */}
+					{token.group_members.length > 0 && (
+						<div className="pt-2 border-t">
+							<div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1.5">
+								<Users size={13} />
+								<span className="font-semibold uppercase tracking-wide">Group Members</span>
+							</div>
+							<div className="flex flex-wrap gap-1.5">
+								{token.group_members.map((m) => (
+									<span
+										key={m.user_id}
+										className="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"
+									>
+										{m.first_name} {m.last_name}
+									</span>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* Action Buttons: Feedback */}
+					{isServed && (
+						<div className="pt-2">
+							<button
+								onClick={() => setShowFeedbackModal(true)}
+								className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 p-3 text-sm font-bold text-white shadow-lg shadow-blue-100 transition-all hover:bg-blue-700 active:scale-95"
+							>
+								<MessageSquarePlus size={18} />
+								Share Your Feedback
+							</button>
+						</div>
+					)}
+
+					{/* Activation / served timestamps */}
+					{(token.activated_at || token.served_at) && (
+						<div className="pt-2 border-t flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400">
+							{token.activated_at && (
+								<span>
+									Activated:{" "}
+									{new Date(token.activated_at).toLocaleString("en-IN", {
+										dateStyle: "medium",
+										timeStyle: "short",
+									})}
+								</span>
+							)}
+							{token.served_at && (
+								<span>
+									Served:{" "}
+									{new Date(token.served_at).toLocaleString("en-IN", {
+										dateStyle: "medium",
+										timeStyle: "short",
+									})}
+								</span>
+							)}
+						</div>
+					)}
+				</div>
 			</div>
-		</div>
+
+			{showFeedbackModal && (
+				<FeedbackModal
+					bookingId={token.booking_id}
+					tokenId={token.token_id}
+					onClose={() => setShowFeedbackModal(false)}
+				/>
+			)}
+		</>
 	);
 }
