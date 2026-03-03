@@ -192,7 +192,7 @@ interface PredictionCardProps {
 function PredictionCard({ prediction }: PredictionCardProps) {
 	const getConfidenceColor = (confidence: number) => {
 		if (confidence >= 90) return "text-emerald-600 bg-emerald-50";
-		if (confidence >= 80) return "text-[var(--color-primary)] bg-[var(--color-primary)]";
+		if (confidence >= 80) return "text-orange-600 bg-orange-50";
 		if (confidence >= 70) return "text-amber-600 bg-amber-50";
 		return "text-gray-600 bg-gray-50";
 	};
@@ -212,9 +212,17 @@ function PredictionCard({ prediction }: PredictionCardProps) {
 				<div className="text-right">
 					<p className="font-bold text-gray-900">{prediction.predicted_quantity}</p>
 					<p className="text-xs text-gray-500">servings</p>
+					<div className="mt-1.5 flex justify-end">
+						<div className="h-2 w-24 rounded-full bg-orange-100/70">
+							<div
+								className="h-2 rounded-full bg-[var(--color-primary)] transition-all duration-300 ease-in-out"
+								style={{ width: `${prediction.confidence}%` }}
+							/>
+						</div>
+					</div>
 				</div>
 				<span
-					className={`px-2 py-1 rounded-lg text-xs font-semibold ${getConfidenceColor(prediction.confidence)}`}
+					className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getConfidenceColor(prediction.confidence)}`}
 				>
 					{prediction.confidence}%
 				</span>
@@ -446,7 +454,7 @@ export default function ForecastPage() {
 											onClick={() => setCrowdExpected(val)}
 											className={`flex-1 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
 												crowdExpected === val
-													? "bg-purple-50 border-purple-300 text-purple-700"
+													? "bg-orange-50 border-orange-300 text-orange-700"
 													: "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
 											}`}
 										>
@@ -475,8 +483,8 @@ export default function ForecastPage() {
 												onClick={() => setWeather(option.value)}
 												className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
 													weather === option.value
-														? "border-purple-500 bg-purple-50 shadow-md"
-														: "border-gray-200 hover:border-purple-200 hover:bg-purple-50/50"
+														? "border-[var(--primary)] bg-orange-50 shadow-md"
+														: "border-gray-200 hover:border-orange-200 hover:bg-orange-50/50"
 												}`}
 											>
 												<Icon size={24} className={option.color} />

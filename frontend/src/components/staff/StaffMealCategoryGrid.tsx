@@ -148,7 +148,7 @@ export function StaffMealCategoryGrid() {
 		<section
 			id="staff-meal-categories"
 			ref={sectionRef}
-			className="relative py-8 sm:py-12 lg:py-16"
+			className="relative pt-4 pb-8 sm:pt-6 sm:pb-12 lg:pt-8 lg:pb-16"
 		>
 			{/* Decorative elements */}
 			<div className="absolute left-1/2 top-0 h-px w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -156,12 +156,9 @@ export function StaffMealCategoryGrid() {
 			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 				<h2
 					ref={headingRef}
-					className="mb-14 text-center text-3xl font-bold text-white opacity-0 sm:mb-16 sm:text-4xl"
+					className="mb-14 text-center text-4xl font-bold text-white opacity-0 sm:mb-16 sm:text-5xl"
 				>
-					Select a{" "}
-					<span className="bg-gradient-to-r from-blue-200 to-white bg-clip-text text-transparent">
-						Meal Category
-					</span>
+					Select a <span className="text-white">Meal Category</span>
 				</h2>
 
 				<div
