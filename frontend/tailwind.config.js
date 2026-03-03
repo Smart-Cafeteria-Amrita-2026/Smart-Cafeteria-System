@@ -17,8 +17,8 @@ module.exports = {
 				},
 				border: "hsl(var(--border))",
 				primary: {
-					DEFAULT: "hsl(var(--primary))",
-					foreground: "hsl(var(--primary-foreground))",
+					DEFAULT: "#ff8c42", // warm orange
+					foreground: "#ffffff", // white
 				},
 				success: {
 					DEFAULT: "hsl(var(--success))",

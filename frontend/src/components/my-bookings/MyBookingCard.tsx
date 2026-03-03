@@ -64,9 +64,6 @@ function formatTime(time: string): string {
 	return `${displayHour}:${minutes} ${suffix}`;
 }
 
-/**
- * Convert an HH:MM:SS time string on a given date to a Date object.
- */
 function toDateWithTime(dateStr: string, timeStr: string): Date {
 	return new Date(`${dateStr}T${timeStr}`);
 }
@@ -100,7 +97,6 @@ function getButtonState(
 	const windowStart = toDateWithTime(slotDate, paymentWindowStart);
 	const windowEnd = toDateWithTime(slotDate, paymentWindowEnd);
 
-	// After payment window — expired
 	if (now > windowEnd) {
 		return {
 			label: "Payment Expired",
@@ -110,8 +106,8 @@ function getButtonState(
 		};
 	}
 
-	// Pay Bill: only during payment window AND sufficient balance
 	const inPaymentWindow = now >= windowStart && now <= windowEnd;
+
 	if (inPaymentWindow && walletBalance >= totalAmount) {
 		return {
 			label: "Pay Bill",
@@ -131,7 +127,6 @@ function getButtonState(
 		};
 	}
 
-	// Add Money: before window starts OR during window with insufficient balance
 	return {
 		label: "Add Money",
 		disabled: false,
@@ -172,6 +167,7 @@ export function MyBookingCard({
 	isSettling,
 }: Props) {
 	const router = useRouter();
+
 	const btn = getButtonState(
 		bookingStatus,
 		totalAmount,
@@ -180,30 +176,29 @@ export function MyBookingCard({
 		paymentWindowStart,
 		paymentWindowEnd
 	);
+
 	const BtnIcon = BUTTON_ICONS[btn.icon];
 
-	return (
-		// biome-ignore lint/a11y/useSemanticElements: Using div with role="button" is intentional - we need nested interactive buttons inside
-		<div
-			role="button"
-			tabIndex={0}
-			onClick={() => router.push(`/my-bookings/${bookingId}`)}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-					router.push(`/my-bookings/${bookingId}`);
-				}
-			}}
-			className="group flex items-stretch rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all cursor-pointer w-full text-left overflow-hidden"
-		>
-			{/* Left: content area with View Details hover */}
-			<div className="relative flex-1 p-4 sm:p-5 space-y-2.5 min-w-0 min-h-[116px]">
-				{/* Blue overlay that appears on hover - covers entire left area */}
-				<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+	const currentTime = new Date();
+	const paymentEnd = toDateWithTime(slotDate, paymentWindowEnd);
+	const isPaymentExpired = currentTime > paymentEnd;
 
-				{/* View Details text - centered, visible on hover */}
+	return (
+		<div className="relative group flex items-stretch rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all w-full overflow-hidden">
+			{/* Full Card Click Overlay */}
+			<button
+				type="button"
+				onClick={() => router.push(`/my-bookings/${bookingId}`)}
+				className="absolute inset-0 z-30"
+				aria-label="View booking details"
+			/>
+
+			{/* Card Content */}
+			<div className="relative flex-1 p-4 sm:p-5 space-y-2.5 min-w-0 min-h-[116px]">
+				<div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+
 				<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-					<div className="flex items-center gap-2 text-white font-bold">
+					<div className="flex items-center gap-2 text-[var(--primary-foreground)] font-bold">
 						<span className="text-sm sm:text-base">View Details</span>
 						<ArrowRight
 							size={20}
@@ -212,70 +207,82 @@ export function MyBookingCard({
 					</div>
 				</div>
 
-				{/* Row 1: Reference + Status badge */}
 				<div className="relative z-0 flex flex-wrap items-center gap-2">
 					<div className="flex items-center gap-1.5 min-w-0">
 						<Hash size={14} className="shrink-0 text-gray-400" />
 						<span className="text-sm font-bold text-gray-900 truncate">{bookingReference}</span>
 					</div>
+
 					<span
-						className={`shrink-0 ml-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide leading-tight ${STATUS_STYLES[bookingStatus]}`}
+						className={`ml-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+							isPaymentExpired && bookingStatus === "pending_payment"
+								? "text-gray-700 bg-gray-100 border border-gray-200"
+								: STATUS_STYLES[bookingStatus]
+						}`}
 					>
-						{STATUS_LABEL[bookingStatus]}
+						{isPaymentExpired && bookingStatus === "pending_payment"
+							? "Payment Expired"
+							: STATUS_LABEL[bookingStatus]}
 					</span>
 				</div>
 
-				{/* Row 2: Details — responsive grid */}
 				<div className="relative z-0 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-gray-600">
 					<div className="flex items-center gap-1.5">
-						<Clock size={14} className="shrink-0 text-indigo-400" />
+						<Clock size={14} className="text-indigo-400" />
 						<span className="font-medium">{slotName}</span>
 					</div>
+
 					<div className="flex items-center gap-1.5">
-						<Calendar size={14} className="shrink-0 text-gray-400" />
+						<Calendar size={14} className="text-gray-400" />
 						<span className="font-medium">{formatDate(slotDate)}</span>
 					</div>
+
 					<div className="flex items-center gap-1.5">
-						<Clock size={14} className="shrink-0 text-blue-400" />
+						<Clock size={14} className="text-blue-400" />
 						<span className="font-medium">{formatTime(startTime)}</span>
 					</div>
+
 					<div className="flex items-center gap-1.5">
-						<Users size={14} className="shrink-0 text-gray-400" />
+						<Users size={14} className="text-gray-400" />
 						<span className="font-medium">
 							{groupSize} {groupSize === 1 ? "person" : "people"}
 						</span>
 					</div>
+
 					<div className="flex items-center gap-1 font-bold text-gray-900">
 						<IndianRupee size={13} />
 						{totalAmount.toFixed(2)}
 					</div>
 				</div>
 
-				{/* Row 3: Token badge or pending message - min-height ensures consistent card size */}
 				<div className="relative z-0 min-h-[24px]">
-					{bookingStatus === "pending_payment" ? (
-						<span className="text-xs text-gray-400 italic">Token generation pending</span>
+					{isPaymentExpired && bookingStatus === "pending_payment" ? (
+						<span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+							Payment Expired
+						</span>
+					) : bookingStatus === "pending_payment" ? (
+						<span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-600 border border-green-200">
+							Pending Payment
+						</span>
 					) : (
 						<BookingTokenBadge bookingReference={bookingReference} bookingStatus={bookingStatus} />
 					)}
 				</div>
 			</div>
 
-			{/* Right: Action button — vertically centered, fixed width */}
-			<div className="flex items-center justify-center px-3 sm:px-5 border-l bg-gray-50/60 shrink-0 min-w-[140px]">
+			{/* Payment Button */}
+			<div className="flex items-center justify-center w-[180px]">
 				<button
 					type="button"
 					disabled={btn.disabled || isSettling}
 					onClick={(e) => {
 						e.stopPropagation();
 						if (btn.disabled || isSettling) return;
-						if (btn.action === "pay") {
-							onPayBill();
-						} else if (btn.action === "wallet") {
-							onAddMoney();
-						}
+
+						if (btn.action === "pay") onPayBill();
+						if (btn.action === "wallet") onAddMoney();
 					}}
-					className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${BUTTON_VARIANT_STYLES[btn.variant]}`}
+					className={`flex items-center justify-center gap-1.5 rounded-xl w-[140px] px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${BUTTON_VARIANT_STYLES[btn.variant]}`}
 				>
 					{isSettling ? (
 						<span className="flex items-center gap-1.5">

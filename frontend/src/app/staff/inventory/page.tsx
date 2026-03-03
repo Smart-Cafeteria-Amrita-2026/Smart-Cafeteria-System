@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useIngredients, useStockAlerts } from "@/hooks/staff/useInventory";
+import { useIngredients } from "@/hooks/staff/useInventory";
 import type { Ingredient } from "@/services/staff/InventoryService";
 import {
 	ArrowLeft,
@@ -18,7 +18,8 @@ import {
 	ChevronUp,
 } from "lucide-react";
 
-// Mock data for development (remove when backend is ready)
+/* ---------------- MOCK DATA (UNCHANGED) ---------------- */
+
 const MOCK_INGREDIENTS: Ingredient[] = [
 	{
 		ingredient_id: 1,
@@ -118,16 +119,18 @@ const MOCK_INGREDIENTS: Ingredient[] = [
 	},
 ];
 
-// Stock status helper
+/* ---------------- HELPERS ---------------- */
+
 const getStockStatus = (current: number, threshold: number) => {
 	if (current === 0)
 		return { status: "out_of_stock", label: "Out of Stock", color: "text-red-600 bg-red-50" };
+
 	if (current <= threshold)
 		return { status: "low_stock", label: "Low Stock", color: "text-amber-600 bg-amber-50" };
+
 	return { status: "in_stock", label: "In Stock", color: "text-emerald-600 bg-emerald-50" };
 };
 
-// Format date helper
 const formatDate = (dateString: string | null) => {
 	if (!dateString) return "—";
 	return new Date(dateString).toLocaleDateString("en-IN", {
@@ -137,11 +140,33 @@ const formatDate = (dateString: string | null) => {
 	});
 };
 
-// Sort types
 type SortField = "ingredient_name" | "current_quantity" | "last_restocked";
 type SortOrder = "asc" | "desc";
 
-// Table Row Component (Dumb)
+/* ---------------- STATS CARD ---------------- */
+
+interface StatsCardProps {
+	label: string;
+	value: number;
+	icon: React.ReactNode;
+}
+
+function StatsCard({ label, value, icon }: StatsCardProps) {
+	return (
+		<div className="bg-gradient-to-br from-white to-orange-50 border border-orange-100 shadow-md rounded-2xl p-4 sm:p-5">
+			<div className="flex items-center justify-between">
+				<div>
+					<p className="text-sm text-gray-500">{label}</p>
+					<p className="text-3xl font-bold text-gray-900">{value}</p>
+				</div>
+				<div className="p-3 rounded-xl bg-orange-100 text-orange-600">{icon}</div>
+			</div>
+		</div>
+	);
+}
+
+/* ---------------- INVENTORY ROW ---------------- */
+
 interface InventoryRowProps {
 	ingredient: Ingredient;
 	onRestock: (id: number) => void;
@@ -149,6 +174,7 @@ interface InventoryRowProps {
 
 function InventoryRow({ ingredient, onRestock }: InventoryRowProps) {
 	const stockStatus = getStockStatus(ingredient.current_quantity, ingredient.minimum_threshold);
+
 	const stockPercent = Math.min(
 		(ingredient.current_quantity / ingredient.minimum_threshold) * 100,
 		200
@@ -156,30 +182,29 @@ function InventoryRow({ ingredient, onRestock }: InventoryRowProps) {
 
 	return (
 		<tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
-			{/* Name & Supplier */}
 			<td className="px-4 py-4 sm:px-6">
 				<div className="flex items-center gap-3">
-					<div className="hidden sm:flex w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary)] itemscenter justify-center text-white font-bold text-sm shrink-0">
+					<div className="hidden sm:flex w-10 h-10 rounded-lg bg-[var(--primary)] items-center justify-center text-white font-bold text-sm">
 						{ingredient.ingredient_name.charAt(0)}
 					</div>
-					<div className="min-w-0">
-						<p className="font-semibold text-gray-900 truncate">{ingredient.ingredient_name}</p>
-						<p className="text-sm text-gray-500 truncate">{ingredient.supplier || "No supplier"}</p>
+
+					<div>
+						<p className="font-semibold text-gray-900">{ingredient.ingredient_name}</p>
+						<p className="text-sm text-gray-500">{ingredient.supplier}</p>
 					</div>
 				</div>
 			</td>
 
-			{/* Current Stock */}
 			<td className="px-4 py-4 sm:px-6">
 				<div className="space-y-1">
-					<div className="flex items-baseline gap-1">
-						<span className="font-bold text-gray-900 text-lg">{ingredient.current_quantity}</span>
-						<span className="text-gray-500 text-sm">{ingredient.unit_of_measurement}</span>
+					<div className="flex gap-1 items-baseline">
+						<span className="font-bold text-lg text-gray-900">{ingredient.current_quantity}</span>
+						<span className="text-sm text-gray-500">{ingredient.unit_of_measurement}</span>
 					</div>
-					{/* Mini progress bar */}
+
 					<div className="w-full max-w-[100px] h-1.5 bg-gray-100 rounded-full overflow-hidden">
 						<div
-							className={`h-full rounded-full transition-all ${
+							className={`h-full ${
 								stockPercent < 50
 									? "bg-red-500"
 									: stockPercent < 100
@@ -192,238 +217,96 @@ function InventoryRow({ ingredient, onRestock }: InventoryRowProps) {
 				</div>
 			</td>
 
-			{/* Threshold (hidden on mobile) */}
-			<td className="hidden md:table-cell px-4 py-4 sm:px-6">
-				<span className="text-gray-600">
-					{ingredient.minimum_threshold} {ingredient.unit_of_measurement}
-				</span>
+			<td className="hidden md:table-cell px-4 py-4 sm:px-6 text-gray-600">
+				{ingredient.minimum_threshold} {ingredient.unit_of_measurement}
 			</td>
 
-			{/* Unit Cost (hidden on mobile) */}
-			<td className="hidden lg:table-cell px-4 py-4 sm:px-6">
-				<span className="text-gray-900 font-medium">
-					{ingredient.unit_cost ? `₹${ingredient.unit_cost}` : "—"}
-				</span>
+			<td className="hidden lg:table-cell px-4 py-4 sm:px-6 text-gray-900 font-medium">
+				₹{ingredient.unit_cost}
 			</td>
 
-			{/* Last Restocked (hidden on small screens) */}
-			<td className="hidden xl:table-cell px-4 py-4 sm:px-6">
-				<span className="text-gray-600 text-sm">{formatDate(ingredient.last_restocked)}</span>
+			<td className="hidden xl:table-cell px-4 py-4 sm:px-6 text-gray-600 text-sm">
+				{formatDate(ingredient.last_restocked)}
 			</td>
 
-			{/* Status */}
 			<td className="px-4 py-4 sm:px-6">
 				<span
 					className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${stockStatus.color}`}
 				>
-					{stockStatus.status === "out_of_stock" && <XCircle size={12} />}
-					{stockStatus.status === "low_stock" && <AlertTriangle size={12} />}
-					{stockStatus.status === "in_stock" && <CheckCircle2 size={12} />}
-					<span className="hidden sm:inline">{stockStatus.label}</span>
+					{stockStatus.label}
 				</span>
 			</td>
 
-			{/* Actions */}
 			<td className="px-4 py-4 sm:px-6">
 				<button
 					onClick={() => onRestock(ingredient.ingredient_id)}
-					className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--color-primary)] transition-colors"
+					className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--primary)] transition-colors"
 				>
 					<RefreshCw size={14} />
-					<span className="hidden sm:inline">Restock</span>
+					Restock
 				</button>
 			</td>
 		</tr>
 	);
 }
 
-// Skeleton Row
-function InventoryRowSkeleton() {
-	return (
-		<tr className="border-b border-gray-100 animate-pulse">
-			<td className="px-4 py-4 sm:px-6">
-				<div className="flex items-center gap-3">
-					<div className="hidden sm:block w-10 h-10 rounded-lg bg-gray-200" />
-					<div className="space-y-2">
-						<div className="h-4 bg-gray-200 rounded w-32" />
-						<div className="h-3 bg-gray-100 rounded w-24" />
-					</div>
-				</div>
-			</td>
-			<td className="px-4 py-4 sm:px-6">
-				<div className="h-5 bg-gray-200 rounded w-16" />
-			</td>
-			<td className="hidden md:table-cell px-4 py-4 sm:px-6">
-				<div className="h-4 bg-gray-100 rounded w-12" />
-			</td>
-			<td className="hidden lg:table-cell px-4 py-4 sm:px-6">
-				<div className="h-4 bg-gray-100 rounded w-14" />
-			</td>
-			<td className="hidden xl:table-cell px-4 py-4 sm:px-6">
-				<div className="h-4 bg-gray-100 rounded w-20" />
-			</td>
-			<td className="px-4 py-4 sm:px-6">
-				<div className="h-6 bg-gray-200 rounded-full w-20" />
-			</td>
-			<td className="px-4 py-4 sm:px-6">
-				<div className="h-8 bg-gray-200 rounded-lg w-20" />
-			</td>
-		</tr>
-	);
-}
+/* ---------------- MAIN PAGE ---------------- */
 
-// Stats Card Component
-interface StatsCardProps {
-	label: string;
-	value: number;
-	icon: React.ReactNode;
-	color: string;
-}
-
-function StatsCard({ label, value, icon, color }: StatsCardProps) {
-	return (
-		<div className={`p-4 sm:p-5 rounded-xl border ${color}`}>
-			<div className="flex items-center justify-between">
-				<div>
-					<p className="text-sm font-medium opacity-80">{label}</p>
-					<p className="text-2xl sm:text-3xl font-bold mt-1">{value}</p>
-				</div>
-				<div className="p-3 rounded-lg bg-white/20">{icon}</div>
-			</div>
-		</div>
-	);
-}
-
-// Main Inventory Page Component
 export default function InventoryPage() {
 	const router = useRouter();
+
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 	const [sortField, setSortField] = useState<SortField>("ingredient_name");
 	const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-	// Use real data when backend is ready, mock for now
-	const { data, isLoading, isError } = useIngredients(searchQuery, showLowStockOnly);
+	const { data } = useIngredients(searchQuery, showLowStockOnly);
+
 	const ingredients = data?.data || MOCK_INGREDIENTS;
 
-	// Calculate stats
 	const stats = useMemo(() => {
 		const total = ingredients.length;
 		const outOfStock = ingredients.filter((i) => i.current_quantity === 0).length;
 		const lowStock = ingredients.filter(
 			(i) => i.current_quantity > 0 && i.current_quantity <= i.minimum_threshold
 		).length;
+
 		const inStock = total - outOfStock - lowStock;
+
 		return { total, outOfStock, lowStock, inStock };
 	}, [ingredients]);
 
-	// Filter and sort
-	const filteredIngredients = useMemo(() => {
-		let filtered = [...ingredients];
-
-		// Search filter
-		if (searchQuery) {
-			const query = searchQuery.toLowerCase();
-			filtered = filtered.filter(
-				(i) =>
-					i.ingredient_name.toLowerCase().includes(query) ||
-					i.supplier?.toLowerCase().includes(query)
-			);
-		}
-
-		// Low stock filter
-		if (showLowStockOnly) {
-			filtered = filtered.filter((i) => i.current_quantity <= i.minimum_threshold);
-		}
-
-		// Sort
-		filtered.sort((a, b) => {
-			let comparison = 0;
-			if (sortField === "ingredient_name") {
-				comparison = a.ingredient_name.localeCompare(b.ingredient_name);
-			} else if (sortField === "current_quantity") {
-				comparison = a.current_quantity - b.current_quantity;
-			} else if (sortField === "last_restocked") {
-				comparison =
-					new Date(a.last_restocked || 0).getTime() - new Date(b.last_restocked || 0).getTime();
-			}
-			return sortOrder === "asc" ? comparison : -comparison;
-		});
-
-		return filtered;
-	}, [ingredients, searchQuery, showLowStockOnly, sortField, sortOrder]);
-
-	const handleSort = (field: SortField) => {
-		if (sortField === field) {
-			setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-		} else {
-			setSortField(field);
-			setSortOrder("asc");
-		}
-	};
-
-	const handleRestock = (id: number) => {
-		// TODO: Open restock modal
-		console.log("Restock ingredient:", id);
-	};
-
-	const SortIcon = ({ field }: { field: SortField }) => {
-		if (sortField !== field) return <ChevronDown size={14} className="opacity-30" />;
-		return sortOrder === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
-	};
-
 	return (
-		<div className="min-h-screen bg-gray-50">
-			{/* Header */}
-			<div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-				<div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+		<div className="min-h-screen bg-white">
+			{/* HEADER */}
+			<div className="bg-[var(--primary)] text-white">
+				<div className="container mx-auto px-4 py-6">
 					<div className="flex items-center gap-4 mb-6">
 						<button
 							onClick={() => router.push("/staff")}
-							className="p-2 hover:bg-white/10 rounded-full transition-colors"
+							className="p-2 hover:bg-white/10 rounded-full"
 						>
 							<ArrowLeft size={24} />
 						</button>
+
 						<div>
-							<h1 className="text-2xl sm:text-3xl font-bold">Inventory Management</h1>
-							<p className="text-white/80 text-sm sm:text-base">
-								Track and manage ingredient stock levels
-							</p>
+							<h1 className="text-3xl font-bold">Inventory Management</h1>
+							<p className="opacity-80">Track and manage ingredient stock levels</p>
 						</div>
 					</div>
 
-					{/* Stats Cards */}
-					<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-						<StatsCard
-							label="Total Items"
-							value={stats.total}
-							icon={<Package size={24} />}
-							color="bg-white/10 text-white border-white/20"
-						/>
-						<StatsCard
-							label="In Stock"
-							value={stats.inStock}
-							icon={<CheckCircle2 size={24} />}
-							color="bg-emerald-500/20 text-white border-emerald-400/30"
-						/>
-						<StatsCard
-							label="Low Stock"
-							value={stats.lowStock}
-							icon={<TrendingDown size={24} />}
-							color="bg-amber-500/20 text-white border-amber-400/30"
-						/>
-						<StatsCard
-							label="Out of Stock"
-							value={stats.outOfStock}
-							icon={<XCircle size={24} />}
-							color="bg-red-500/20 text-white border-red-400/30"
-						/>
+					{/* STATS */}
+					<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+						<StatsCard label="Total Items" value={stats.total} icon={<Package size={22} />} />
+						<StatsCard label="In Stock" value={stats.inStock} icon={<CheckCircle2 size={22} />} />
+						<StatsCard label="Low Stock" value={stats.lowStock} icon={<TrendingDown size={22} />} />
+						<StatsCard label="Out of Stock" value={stats.outOfStock} icon={<XCircle size={22} />} />
 					</div>
 				</div>
 			</div>
 
-			{/* Content */}
-			<div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+			{/* CONTENT */}
+			<div className="container mx-auto px-4 py-6">
 				{/* Search & Filters */}
 				<div className="flex flex-col sm:flex-row gap-4 mb-6">
 					{/* Search */}
@@ -434,7 +317,7 @@ export default function InventoryPage() {
 							placeholder="Search ingredients or suppliers..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+							className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none transition-all"
 						/>
 					</div>
 
@@ -453,14 +336,14 @@ export default function InventoryPage() {
 					</button>
 
 					{/* Add Item Button */}
-					<button className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary)] transition-colors shadow-lg shadow-blue-500/25 shrink-0">
+					<button className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl font-semibold hover:bg-[var(--primary)]/90 transition-colors shadow-lg shadow-[var(--primary)]/25 shrink-0">
 						<Plus size={18} />
 						<span className="hidden sm:inline">Add Ingredient</span>
 						<span className="sm:hidden">Add</span>
 					</button>
 				</div>
 
-				{/* Table */}
+				{/* TABLE */}
 				<div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
 					<div className="overflow-x-auto">
 						<table className="w-full min-w-[600px]">
@@ -468,20 +351,22 @@ export default function InventoryPage() {
 								<tr className="bg-gray-50 border-b border-gray-100">
 									<th className="px-4 py-3 sm:px-6 text-left">
 										<button
-											onClick={() => handleSort("ingredient_name")}
+											onClick={() => setSortField("ingredient_name")}
 											className="flex items-center gap-1 font-semibold text-gray-600 text-sm uppercase tracking-wide hover:text-gray-900"
 										>
 											Ingredient
-											<SortIcon field="ingredient_name" />
+											{sortField === "ingredient_name" &&
+												(sortOrder === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
 										</button>
 									</th>
 									<th className="px-4 py-3 sm:px-6 text-left">
 										<button
-											onClick={() => handleSort("current_quantity")}
+											onClick={() => setSortField("current_quantity")}
 											className="flex items-center gap-1 font-semibold text-gray-600 text-sm uppercase tracking-wide hover:text-gray-900"
 										>
 											Stock
-											<SortIcon field="current_quantity" />
+											{sortField === "current_quantity" &&
+												(sortOrder === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
 										</button>
 									</th>
 									<th className="hidden md:table-cell px-4 py-3 sm:px-6 text-left">
@@ -496,11 +381,12 @@ export default function InventoryPage() {
 									</th>
 									<th className="hidden xl:table-cell px-4 py-3 sm:px-6 text-left">
 										<button
-											onClick={() => handleSort("last_restocked")}
+											onClick={() => setSortField("last_restocked")}
 											className="flex items-center gap-1 font-semibold text-gray-600 text-sm uppercase tracking-wide hover:text-gray-900"
 										>
 											Last Restocked
-											<SortIcon field="last_restocked" />
+											{sortField === "last_restocked" &&
+												(sortOrder === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
 										</button>
 									</th>
 									<th className="px-4 py-3 sm:px-6 text-left">
@@ -516,43 +402,21 @@ export default function InventoryPage() {
 								</tr>
 							</thead>
 							<tbody>
-								{isLoading ? (
-									Array.from({ length: 5 }).map((_, i) => <InventoryRowSkeleton key={i} />)
-								) : filteredIngredients.length === 0 ? (
-									<tr>
-										<td colSpan={7} className="px-6 py-12 text-center">
-											<Package size={48} className="mx-auto text-gray-300 mb-4" />
-											<p className="text-gray-500 font-medium">No ingredients found</p>
-											<p className="text-gray-400 text-sm">
-												{searchQuery
-													? "Try a different search term"
-													: "Add your first ingredient to get started"}
-											</p>
-										</td>
-									</tr>
-								) : (
-									filteredIngredients.map((ingredient) => (
-										<InventoryRow
-											key={ingredient.ingredient_id}
-											ingredient={ingredient}
-											onRestock={handleRestock}
-										/>
-									))
-								)}
+								{ingredients.map((ingredient) => (
+									<InventoryRow
+										key={ingredient.ingredient_id}
+										ingredient={ingredient}
+										onRestock={(id) => console.log("Restock", id)}
+									/>
+								))}
 							</tbody>
 						</table>
 					</div>
 
-					{/* Table Footer */}
-					{filteredIngredients.length > 0 && (
-						<div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-							<p className="text-sm text-gray-500">
-								Showing{" "}
-								<span className="font-medium text-gray-900">{filteredIngredients.length}</span> of{" "}
-								<span className="font-medium text-gray-900">{ingredients.length}</span> ingredients
-							</p>
-						</div>
-					)}
+					{/* TABLE FOOTER */}
+					<div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+						<p className="text-sm text-gray-500">Showing {ingredients.length} items</p>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -363,21 +363,21 @@ export default function ForecastPage() {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			{/* Header */}
-			<div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+			<div className="bg-[var(--primary)] text-[var(--primary-foreground)]">
 				<div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
 					<div className="flex items-center gap-4 mb-6">
 						<button
 							onClick={() => router.push("/staff")}
-							className="p-2 hover:bg-white/10 rounded-full transition-colors"
+							className="p-2 hover:bg-[var(--primary-foreground)]/10 rounded-full transition-colors"
 						>
 							<ArrowLeft size={24} />
 						</button>
 						<div>
 							<h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-								<BarChart3 size={28} />
+								<BarChart3 size={28} className="text-[var(--primary-foreground)]" />
 								Meal Forecaster
 							</h1>
-							<p className="text-white/80 text-sm sm:text-base">
+							<p className="text-[var(--primary-foreground)]/80 text-sm sm:text-base">
 								Predict meals to prepare based on crowd and weather
 							</p>
 						</div>
@@ -392,7 +392,7 @@ export default function ForecastPage() {
 					<div className="lg:col-span-1">
 						<div className="bg-white rounded-2xl border shadow-sm p-5 sm:p-6 sticky top-24">
 							<h2 className="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-								<Sparkles size={20} className="text-purple-500" />
+								<Sparkles size={20} className="text-[var(--primary)]" />
 								Forecast Parameters
 							</h2>
 
@@ -491,7 +491,7 @@ export default function ForecastPage() {
 							<button
 								onClick={handleGenerate}
 								disabled={isGenerating}
-								className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg shadow-purple-500/25 disabled:opacity-70 disabled:cursor-not-allowed"
+								className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl font-semibold hover:bg-[var(--primary)]/90 transition-colors shadow-lg shadow-[var(--primary)]/25 disabled:opacity-70 disabled:cursor-not-allowed"
 							>
 								{isGenerating ? (
 									<>
@@ -500,7 +500,7 @@ export default function ForecastPage() {
 									</>
 								) : (
 									<>
-										<Sparkles size={20} />
+										<Sparkles size={18} />
 										Generate Forecast
 									</>
 								)}
