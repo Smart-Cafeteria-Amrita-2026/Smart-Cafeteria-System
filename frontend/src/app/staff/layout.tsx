@@ -16,13 +16,13 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
 		// Redirect if not logged in
 		if (!token) {
-			router.push("/login?redirect=/staff");
+			router.replace("/login");
 			return;
 		}
 
 		// Redirect if not staff
 		if (!isStaff) {
-			router.push("/");
+			router.replace("/");
 		}
 	}, [isHydrated, isLoading, token, isStaff, router]);
 

@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProfile, useUpdateProfile } from "@/hooks/profile/useProfile";
 import { useRole } from "@/hooks/useRole";
+import { resetClientSession } from "@/lib/session";
 import { ProfileHeaderSkeleton } from "@/components/profile/ProfileHeaderSkeleton";
 import { WalletDashboard } from "@/components/wallet/WalletDashboard";
 import {
@@ -41,7 +43,8 @@ type EditProfileFormValues = z.infer<typeof editProfileSchema>;
 
 export default function ProfilePage() {
 	const router = useRouter();
-	const { token, isHydrated, logout } = useAuthStore();
+	const queryClient = useQueryClient();
+	const { token, isHydrated } = useAuthStore();
 	const { data: profile, isLoading, error } = useProfile();
 	const updateProfileMutation = useUpdateProfile();
 	const { isStaff } = useRole();
@@ -67,7 +70,7 @@ export default function ProfilePage() {
 	// Redirect guest users
 	useEffect(() => {
 		if (isHydrated && !token) {
-			router.push("/login?redirect=/profile");
+			router.replace("/login");
 		}
 	}, [isHydrated, token, router]);
 
@@ -84,9 +87,13 @@ export default function ProfilePage() {
 	}, [profile, reset]);
 
 	const handleLogout = () => {
-		logout();
-		router.push("/");
+		resetClientSession(queryClient);
+		router.replace("/login");
 	};
+
+	if (isHydrated && !token) {
+		return null;
+	}
 
 	const handleEditToggle = () => {
 		if (isEditing) {

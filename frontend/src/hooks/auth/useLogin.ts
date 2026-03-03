@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthService } from "@/services/auth.service";
@@ -7,6 +7,7 @@ import type { LoginPayload, LoginResponse } from "@/types/auth.types";
 
 export function useLogin() {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const setToken = useAuthStore((s) => s.setToken);
 	const setEmail = useAuthStore((s) => s.setEmail);
 
@@ -14,6 +15,11 @@ export function useLogin() {
 		mutationFn: (payload: LoginPayload) => AuthService.login(payload),
 		onSuccess: (response: LoginResponse, payload: LoginPayload) => {
 			if (response?.success && response?.data?.accessToken) {
+				queryClient.removeQueries({ queryKey: ["profile"] });
+				queryClient.removeQueries({
+					predicate: (query) => String(query.queryKey[0]).startsWith("staff"),
+				});
+
 				setToken(response.data.accessToken);
 				// Use email from response, fallback to the login payload email
 				setEmail(response.data.email || payload.email);

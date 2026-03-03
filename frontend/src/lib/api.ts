@@ -1,10 +1,10 @@
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import { toast } from "sonner";
-import { useAuthStore } from "@/src/stores/auth.store";
 import { useMaintenanceStore } from "@/src/stores/useMaintenanceStore";
 import type { ApiResponse } from "@/src/types/primitiveTypes";
 import { API_ROUTES } from "./routes";
+import { resetClientSession } from "./session";
 
 export const api = axios.create({
 	baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}`,
@@ -73,13 +73,11 @@ api.interceptors.response.use(
 				return Promise.resolve({ data: null });
 			} else if (error.config?.url?.includes(`${API_ROUTES.AUTH.REGISTER}/otp`)) {
 				toast.error("Signup session expired. Please sign up again.");
-				window.location.href = "/signup";
 			} else {
 				if (!error.config?.url?.includes(API_ROUTES.AUTH.LOGOUT)) {
 					toast.error("Session expired. Please login again.");
 				}
-				useAuthStore.getState().logout();
-				window.location.href = "/login";
+				resetClientSession();
 			}
 		} else if (status === 400) {
 			if (error.config?.url?.includes(`${API_ROUTES.AUTH.LOGIN}`)) {

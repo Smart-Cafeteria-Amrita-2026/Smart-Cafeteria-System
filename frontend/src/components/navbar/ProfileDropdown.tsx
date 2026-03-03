@@ -3,18 +3,19 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth.store";
+import { useQueryClient } from "@tanstack/react-query";
 import { AuthService } from "@/services/auth.service";
 import { User, LogOut, ReceiptText, BookCheck, Package, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { useRole } from "@/hooks/useRole";
+import { resetClientSession } from "@/lib/session";
 
 export function ProfileDropdown() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const router = useRouter();
-	const logout = useAuthStore((s) => s.logout);
+	const queryClient = useQueryClient();
 	const { isStaff } = useRole();
 
 	// Close when clicking outside
@@ -36,10 +37,10 @@ export function ProfileDropdown() {
 			// Continue with logout even if backend call fails
 			console.warn("Backend logout failed:", error);
 		} finally {
-			logout();
+			resetClientSession(queryClient);
 			setIsOpen(false);
 			toast.success("Logged out successfully");
-			router.push("/");
+			router.replace("/login");
 			setIsLoggingOut(false);
 		}
 	};
