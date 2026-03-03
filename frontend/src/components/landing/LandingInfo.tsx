@@ -31,7 +31,7 @@ const INFO_CARDS = [
 		title: "Pre-book Meals",
 		description:
 			"Plan your meals in advance and skip long queues. Smart pre-booking ensures availability and saves your valuable time.",
-		gradient: "from-[var(--color-primary)] to-[var(--color-secondary)]",
+		gradient: "from-orange-500 to-amber-500",
 	},
 	{
 		icon: (
@@ -53,7 +53,7 @@ const INFO_CARDS = [
 		title: "Reduce Food Wastage",
 		description:
 			"Demand forecasting helps the cafeteria prepare the right quantity of food, minimizing waste and promoting sustainability.",
-		gradient: "from-green-500 to-emerald-500",
+		gradient: "from-amber-500 to-orange-500",
 	},
 	{
 		icon: (
@@ -75,7 +75,7 @@ const INFO_CARDS = [
 		title: "Efficient Operations",
 		description:
 			"Smooth coordination between students, staff, and administrators results in faster service and better management.",
-		gradient: "from-orange-500 to-amber-500",
+		gradient: "from-orange-600 to-amber-500",
 	},
 ];
 
@@ -127,11 +127,11 @@ export function LandingInfo() {
 	return (
 		<section
 			ref={sectionRef}
-			className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white py-24 sm:py-32"
+			className="relative overflow-hidden bg-gradient-to-b from-amber-200 via-orange-200 to-amber-300 py-24 sm:py-32"
 		>
 			{/* Decorative background elements */}
-			<div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-[var(--color-primary)]/50 blur-3xl" />
-			<div className="absolute -right-32 bottom-1/4 h-96 w-96 rounded-full bg-[var(--color-secondary)]/50 blur-3xl" />
+			<div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-orange-300/35 blur-3xl" />
+			<div className="absolute -right-32 bottom-1/4 h-96 w-96 rounded-full bg-amber-100/40 blur-3xl" />
 
 			<div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
 				<h2
@@ -149,7 +149,7 @@ export function LandingInfo() {
 					{INFO_CARDS.map((card) => (
 						<div
 							key={card.title}
-							className="info-card group relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-200/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-gray-300/50"
+							className="info-card group relative overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-xl shadow-orange-300/30 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-orange-200/60 hover:shadow-2xl hover:shadow-orange-400/40"
 						>
 							{/* Gradient top border on hover */}
 							<div
@@ -158,7 +158,7 @@ export function LandingInfo() {
 
 							{/* Icon */}
 							<div
-								className={`mb-6 inline-flex rounded-2xl bg-gradient-to-br ${card.gradient} p-4 text-white shadow-lg`}
+								className={`mb-6 inline-flex rounded-2xl bg-gradient-to-br ${card.gradient} p-4 text-white shadow-lg shadow-orange-300/40 ring-1 ring-orange-200/60 transition-transform duration-300 group-hover:scale-105`}
 							>
 								{card.icon}
 							</div>
