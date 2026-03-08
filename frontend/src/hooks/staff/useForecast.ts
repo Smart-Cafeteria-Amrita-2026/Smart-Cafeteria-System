@@ -1,15 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { ForecastService, ForecastInput } from "@/services/staff/ForecastService";
+import { useQuery } from "@tanstack/react-query";
+import { ForecastService } from "@/services/staff/ForecastService";
+import type { TrendingItemsResponse } from "@/types/staff/forecast.types";
 
-export function useGenerateForecast() {
-	return useMutation({
-		mutationFn: (payload: ForecastInput) => ForecastService.generateForecast(payload),
-		onSuccess: () => {
-			toast.success("Forecast generated successfully!");
-		},
-		onError: () => {
-			toast.error("Failed to generate forecast. Please try again.");
-		},
+export function useTrendingItems() {
+	return useQuery<TrendingItemsResponse>({
+		queryKey: ["forecast", "trending-items"],
+		queryFn: ForecastService.getTrendingItems,
+		staleTime: 5 * 60 * 1000,
+		retry: 1,
 	});
 }

@@ -43,46 +43,44 @@ export default function CheckoutPage() {
 		}
 	}, []);
 
+	// Validation effects — called unconditionally at top level
+	useEffect(() => {
+		if (!hydrated) return;
+
+		if (!token) {
+			toast.error("Please login to proceed");
+			router.push(`/login?redirect=${encodeURIComponent("/checkout")}`);
+			return;
+		}
+		if (items.length === 0) {
+			toast.error("Your cart is empty.");
+			return;
+		}
+		if (!slotId) {
+			toast.error("No slot selected. Please go back and select a slot.");
+			return;
+		}
+		const currentSlot = getSelectedSlot();
+		if (!currentSlot) {
+			toast.error("Selected slot not found. Please go back and re-select.");
+			return;
+		}
+		if (groupMembers.length > 5) {
+			toast.error("Cannot add more than 5 additional group members.");
+		}
+	}, [hydrated, token, items.length, slotId, getSelectedSlot, groupMembers.length, router]);
+
 	if (!hydrated) {
 		return <div className="p-8 text-center text-gray-500">Loading checkout...</div>;
 	}
 
-	if (!token) {
-		useEffect(() => {
-			toast.error("Please login to proceed");
-			router.push(`/login?redirect=${encodeURIComponent("/checkout")}`);
-		}, []);
-		return null;
-	}
-
-	if (items.length === 0) {
-		useEffect(() => {
-			toast.error("Your cart is empty.");
-		}, []);
-		return null;
-	}
-
-	if (!slotId) {
-		useEffect(() => {
-			toast.error("No slot selected. Please go back and select a slot.");
-		}, []);
-		return null;
-	}
+	if (!token) return null;
+	if (items.length === 0) return null;
+	if (!slotId) return null;
 
 	const slot = getSelectedSlot();
-	if (!slot) {
-		useEffect(() => {
-			toast.error("Selected slot not found. Please go back and re-select.");
-		}, []);
-		return null;
-	}
-
-	if (groupMembers.length > 5) {
-		useEffect(() => {
-			toast.error("Cannot add more than 5 additional group members.");
-		}, []);
-		return null;
-	}
+	if (!slot) return null;
+	if (groupMembers.length > 5) return null;
 
 	const isEditMode = editBookingId !== null && editBookingId > 0;
 

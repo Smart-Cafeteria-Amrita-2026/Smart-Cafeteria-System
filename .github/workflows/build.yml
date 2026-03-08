@@ -12,6 +12,12 @@ on:
       - 'backend/**'
       - 'frontend/**'
       - '.github/workflows/build.yml'
+  workflow_call:
+    inputs:
+      project:
+        description: 'Project to build (backend or frontend). Omit to build both.'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -20,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        project: [backend, frontend]
+        project: ${{ inputs.project && fromJSON(format('["{0}"]', inputs.project)) || fromJSON('["backend", "frontend"]') }}
         include:
           - project: backend
             cache-path: 'backend/pnpm-lock.yaml'

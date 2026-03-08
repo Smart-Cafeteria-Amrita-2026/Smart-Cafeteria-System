@@ -14,6 +14,12 @@ on:
       - 'frontend/**'
       - 'biome.json'
       - '.github/workflows/lint.yml'
+  workflow_call:
+    inputs:
+      project:
+        description: 'Project to lint (backend or frontend). Omit to lint both.'
+        required: false
+        type: string
 
 jobs:
   lint:
@@ -22,7 +28,7 @@ jobs:
 
     strategy:
       matrix:
-        project: [backend, frontend]
+        project: ${{ inputs.project && fromJSON(format('["{0}"]', inputs.project)) || fromJSON('["backend", "frontend"]') }}
         include:
           - project: backend
             cache-path: 'backend/pnpm-lock.yaml'

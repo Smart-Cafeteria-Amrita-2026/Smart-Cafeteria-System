@@ -8,6 +8,8 @@ import mealSlotRoutes from "./routes/mealSlotRoutes";
 import otpRoutes from "./routes/otpRoutes";
 import tokenRoutes from "./routes/tokenRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
+import inventoryRoutes from "./routes/inventoryRoutes";
+import forecastRoutes from "./routes/forecastRoutes";
 
 dotenv.config();
 
@@ -46,6 +48,8 @@ app.use("/api/tokens", tokenRoutes);
 
 //PAYMENT ROUTES (S.2.3 - No-Show Handling & Token Re-allocation)
 app.use("/api/payments", paymentRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/forecast", forecastRoutes);
 
 app.listen(port, () => {
 	console.log(`Server running at http://localhost:${port}`);

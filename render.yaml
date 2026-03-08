@@ -1,0 +1,59 @@
+# Render Blueprint – Smart Cafeteria System
+# https://docs.render.com/infrastructure-as-code
+#
+# To use: connect this repo as a Blueprint in the Render dashboard.
+# Render will auto-detect this file and provision the services below.
+
+services:
+  # ── Backend (Express + TypeScript) ─────────────────
+  - type: web
+    name: smart-cafeteria-backend
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pnpm install && pnpm run build
+    startCommand: node dist/index.js
+    autoDeploy: false # Deploys are triggered by GitHub Actions after CI passes
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: PNPM_VERSION
+        value: 10
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        sync: false # Set manually in Render dashboard
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE
+        sync: false
+      - key: SUPABASE_KEY_ANON
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+
+  # ── Forecaster (FastAPI + Prophet) ─────────────────
+  - type: web
+    name: smart-cafeteria-forecaster
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: forecaster
+    buildCommand: |
+      pip install -r requirements.txt &&
+      python -c "from cmdstanpy import install_cmdstan; install_cmdstan()" &&
+      python -c "from prophet import Prophet; Prophet()"
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: false # Deploys are triggered by GitHub Actions after CI passes
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

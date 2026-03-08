@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from "@/lib/api";
+import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api";
 
 // Ingredient types based on database schema
 export interface Ingredient {
@@ -92,6 +92,10 @@ export const InventoryService = {
 		id: number,
 		payload: Partial<AddIngredientPayload>
 	): Promise<IngredientResponse> => apiPut(`/api/inventory/ingredients/${id}`, payload),
+
+	// Delete ingredient
+	deleteIngredient: (id: number): Promise<{ success: boolean }> =>
+		apiDelete(`/api/inventory/ingredients/${id}`),
 
 	// Update inventory (restock, consume, adjust)
 	updateInventory: (payload: UpdateInventoryPayload): Promise<{ success: boolean }> =>

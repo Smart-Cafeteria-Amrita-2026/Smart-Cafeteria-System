@@ -4,6 +4,7 @@ import {
 	InventoryService,
 	AddIngredientPayload,
 	UpdateInventoryPayload,
+	type Ingredient,
 } from "@/services/staff/InventoryService";
 
 // Get all ingredients
@@ -49,6 +50,40 @@ export function useAddIngredient() {
 		},
 		onError: () => {
 			toast.error("Failed to add ingredient.");
+		},
+	});
+}
+
+// Update ingredient details
+export function useUpdateIngredient() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ id, payload }: { id: number; payload: Partial<AddIngredientPayload> }) =>
+			InventoryService.updateIngredient(id, payload),
+		onSuccess: () => {
+			toast.success("Ingredient updated successfully!");
+			queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+		},
+		onError: () => {
+			toast.error("Failed to update ingredient.");
+		},
+	});
+}
+
+// Delete ingredient
+export function useDeleteIngredient() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (id: number) => InventoryService.deleteIngredient(id),
+		onSuccess: () => {
+			toast.success("Ingredient deleted successfully!");
+			queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+			queryClient.invalidateQueries({ queryKey: ["stockAlerts"] });
+		},
+		onError: () => {
+			toast.error("Failed to delete ingredient.");
 		},
 	});
 }
