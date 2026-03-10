@@ -45,14 +45,14 @@ export const oauthCallback = async (req: Request, res: Response): Promise<void> 
 		res.cookie("access_token", access_token, {
 			httpOnly: true,
 			secure: isProduction,
-			sameSite: "strict",
+			sameSite: isProduction ? "none" : "lax",
 			maxAge: 60 * 60 * 1000,
 		});
 
 		res.cookie("refresh_token", refresh_token, {
 			httpOnly: true,
 			secure: isProduction,
-			sameSite: "strict",
+			sameSite: isProduction ? "none" : "lax",
 			maxAge: 30 * 24 * 60 * 60 * 1000,
 		});
 
@@ -103,8 +103,17 @@ export const completeProfile = async (req: Request, res: Response): Promise<void
 };
 
 export const logoutUser = async (req: Request, res: Response) => {
-	res.clearCookie("access_token");
-	res.clearCookie("refresh_token");
+	const isProduction = process.env.NODE_ENV === "production";
+	res.clearCookie("access_token", {
+		httpOnly: true,
+		secure: isProduction,
+		sameSite: isProduction ? "none" : "lax",
+	});
+	res.clearCookie("refresh_token", {
+		httpOnly: true,
+		secure: isProduction,
+		sameSite: isProduction ? "none" : "lax",
+	});
 
 	const access_token = req.cookies.access_token;
 

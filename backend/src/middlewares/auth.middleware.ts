@@ -41,21 +41,32 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 	}
 
 	if (refreshToken) {
+		const isProduction = process.env.NODE_ENV === "production";
+
 		const { data, error } = await public_client.auth.refreshSession({
 			refresh_token: refreshToken,
 		});
 
+		const sameSite: "none" | "lax" = isProduction ? "none" : "lax";
+
 		if (error || !data.session) {
-			res.clearCookie("access_token");
-			res.clearCookie("refresh_token");
+			res.clearCookie("access_token", {
+				httpOnly: true,
+				secure: isProduction,
+				sameSite,
+			});
+			res.clearCookie("refresh_token", {
+				httpOnly: true,
+				secure: isProduction,
+				sameSite,
+			});
 			return res.status(401).json({ error: "Session expired. Please login again." });
 		}
 
-		const isProduction = process.env.NODE_ENV === "production";
 		const cookieOptions = {
 			httpOnly: true,
 			secure: isProduction,
-			sameSite: "lax" as const,
+			sameSite,
 		};
 
 		res.cookie("access_token", data.session.access_token, {
