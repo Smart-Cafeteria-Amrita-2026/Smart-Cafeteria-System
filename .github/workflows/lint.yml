@@ -29,11 +29,6 @@ jobs:
     strategy:
       matrix:
         project: ${{ inputs.project && fromJSON(format('["{0}"]', inputs.project)) || fromJSON('["backend", "frontend"]') }}
-        include:
-          - project: backend
-            cache-path: 'backend/pnpm-lock.yaml'
-          - project: frontend
-            cache-path: 'frontend/pnpm-lock.yaml'
 
     defaults:
       run:
@@ -53,7 +48,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-          cache-dependency-path: ${{ matrix.cache-path }}
+          cache-dependency-path: '${{ matrix.project }}/pnpm-lock.yaml'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
