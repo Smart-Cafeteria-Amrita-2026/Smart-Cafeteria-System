@@ -60,13 +60,14 @@ export async function querySystemLogs(
 ): Promise<ServiceResponse<SystemLogResponse>> {
 	const lokiHost = process.env.GRAFANA_LOKI_URL;
 	const lokiUser = process.env.GRAFANA_LOKI_USER;
-	const lokiToken = process.env.GRAFANA_LOKI_TOKEN;
+	// Prefer a dedicated read token; fall back to the push token
+	const lokiToken = process.env.GRAFANA_LOKI_READ_TOKEN || process.env.GRAFANA_LOKI_TOKEN;
 
 	if (!lokiHost || !lokiUser || !lokiToken) {
 		return {
 			success: false,
 			error:
-				"Loki is not configured. Set GRAFANA_LOKI_URL, GRAFANA_LOKI_USER, and GRAFANA_LOKI_TOKEN.",
+				"Loki is not configured. Set GRAFANA_LOKI_URL, GRAFANA_LOKI_USER, and GRAFANA_LOKI_READ_TOKEN (or GRAFANA_LOKI_TOKEN).",
 			statusCode: STATUS.SERVICEUNAVAILABLE,
 		};
 	}
