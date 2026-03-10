@@ -1,5 +1,5 @@
 import { spawn, ChildProcess } from "child_process";
-import path from "path";
+import * as path from "path";
 
 // Mock aliases used in frontend services to resolve to their actual files
 // This bypasses the need to modify the root jest.config.js
@@ -60,7 +60,7 @@ export function startBackend(timeout = 60000): Promise<void> {
       // Forward backend output to the test runner logs for debugging
       try {
         console.log("[backend] ", text.trim());
-      } catch (e) {}
+      } catch (e) { }
       if (text.includes("Server running")) {
         clearTimeout(timer);
         resolve();
@@ -85,6 +85,6 @@ export function stopBackend(): void {
   if (!backendProcess) return;
   try {
     backendProcess.kill();
-  } catch (e) {}
+  } catch (e) { }
   backendProcess = null;
 }
