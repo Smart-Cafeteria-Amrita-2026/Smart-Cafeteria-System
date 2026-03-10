@@ -1,0 +1,155 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "#000000",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "title": "HTTP Requests (rate)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by(route) (rate(http_requests_total[1m]))",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "title": "Request Duration (p50/p95)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 8 },
+      "id": 6,
+      "title": "Auth: /test - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*test.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*test.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 8 },
+      "id": 8,
+      "title": "Auth: /register - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*register.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*register.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 8 },
+      "id": 10,
+      "title": "Auth: /signIn - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*signIn.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*signIn.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 14 },
+      "id": 12,
+      "title": "Auth: /signOut - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*signOut.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*signOut.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 14 },
+      "id": 14,
+      "title": "Auth: /forgot-password - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*forgot.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*forgot.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 14 },
+      "id": 16,
+      "title": "Auth: /reset-password - Rate & p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{route=~\".*reset.*\"}[1m]))", "legendFormat": "rate", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\".*reset.*\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" }
+      ]
+    }
+  ],
+  "schemaVersion": 34,
+  "style": "dark",
+  "tags": ["smart-cafeteria"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Smart Cafeteria HTTP Metrics",
+  "uid": "smart-cafeteria-http-metrics",
+  "version": 1
+}

@@ -1,0 +1,3 @@
+[submodule "docs"]
+	path = docs
+	url = https://github.com/AMRITH03/Smart-cafeteria-System-docs.git
