@@ -151,3 +151,17 @@ export async function apiDelete<T>(
 	});
 	return res.data;
 }
+
+export async function apiPatch<T>(
+	url: string,
+	data?: unknown,
+	options?: { skipAuth?: boolean; headers?: Record<string, string> }
+): Promise<T> {
+	const headers: Record<string, string> = {};
+	if (options?.skipAuth) headers.skipAuth = "true";
+	if (options?.headers) Object.assign(headers, options.headers);
+	const res = await api.patch<ApiResponse<T>>(url, data, {
+		headers: Object.keys(headers).length > 0 ? headers : undefined,
+	});
+	return res.data;
+}

@@ -14,6 +14,7 @@ services:
     rootDir: backend
     buildCommand: pnpm install && pnpm run build
     startCommand: node dist/index.js
+    healthCheckPath: /healthz
     autoDeploy: false # Deploys are triggered by GitHub Actions after CI passes
     envVars:
       - key: NODE_VERSION
@@ -44,6 +45,7 @@ services:
     plan: free
     region: singapore
     rootDir: forecaster
+    healthCheckPath: /
     buildCommand: |
       pip install -r requirements.txt &&
       python -c "from cmdstanpy import install_cmdstan; install_cmdstan()" &&

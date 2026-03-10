@@ -10,18 +10,19 @@ import { useAuthStore } from "@/stores/auth.store";
 
 export default function HomePage() {
 	const router = useRouter();
-	const { isStaff, isLoading } = useRole();
+	const { isStaff, isAdmin, isLoading } = useRole();
 	const { isAuthenticated, isHydrated } = useAuthStore();
 
-	// Redirect staff users to their dashboard
+	// Redirect staff/admin users to their dashboard
 	useEffect(() => {
 		if (!isHydrated || isLoading) return;
 
-		// Only redirect if logged in as staff
 		if (isAuthenticated && isStaff) {
 			router.replace("/staff");
+		} else if (isAuthenticated && isAdmin) {
+			router.replace("/admin");
 		}
-	}, [isHydrated, isLoading, isAuthenticated, isStaff, router]);
+	}, [isHydrated, isLoading, isAuthenticated, isStaff, isAdmin, router]);
 
 	// Show loading while checking role for logged-in users
 	if (isAuthenticated && (!isHydrated || isLoading)) {
@@ -32,8 +33,8 @@ export default function HomePage() {
 		);
 	}
 
-	// If staff, don't render landing page (redirect will happen)
-	if (isAuthenticated && isStaff) {
+	// If staff or admin, don't render landing page (redirect will happen)
+	if (isAuthenticated && (isStaff || isAdmin)) {
 		return null;
 	}
 

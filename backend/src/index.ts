@@ -10,6 +10,11 @@ import paymentRoutes from "./routes/paymentRoutes";
 import inventoryRoutes from "./routes/inventoryRoutes";
 import forecastRoutes from "./routes/forecastRoutes";
 import menuItemRoutes from "./routes/menuItemRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import { register } from "./config/metrics";
+import { logger } from "./config/logger";
+import { metricsMiddleware } from "./middlewares/metrics.middleware";
+import { startMetricsPush } from "./config/metricsPush";
 
 dotenv.config();
 
@@ -23,6 +28,24 @@ app.use(
 		credentials: true,
 	})
 );
+
+// Prometheus metrics endpoint – must be before body parsers
+app.get("/metrics", async (_req, res) => {
+	try {
+		res.set("Content-Type", register.contentType);
+		res.end(await register.metrics());
+	} catch (err) {
+		res.status(500).end();
+	}
+});
+
+// Health check endpoint for Render
+app.get("/healthz", (_req, res) => {
+	res.status(200).json({ status: "ok", service: "backend" });
+});
+
+// Track HTTP request metrics
+app.use(metricsMiddleware);
 
 // Note: Stripe webhook needs raw body, so we handle it in paymentRoutes before express.json()
 // The webhook route uses express.raw() middleware internally
@@ -49,6 +72,10 @@ app.use("/api/inventory", inventoryRoutes);
 app.use("/api/forecast", forecastRoutes);
 app.use("/api/menu-items", menuItemRoutes);
 
+//ADMIN ROUTES
+app.use("/api/admin", adminRoutes);
+
 app.listen(port, () => {
-	console.log(`Server running at http://localhost:${port}`);
+	logger.info(`Server running at http://localhost:${port}`);
+	startMetricsPush();
 });

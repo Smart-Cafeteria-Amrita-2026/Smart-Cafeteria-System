@@ -10,11 +10,13 @@ export function useRole() {
 	const role = profile?.role ?? null;
 	const isStaff = role === "staff";
 	const isUser = role === "user";
+	const isAdmin = role === "admin";
 
 	return {
 		role,
 		isStaff,
 		isUser,
+		isAdmin,
 		isLoading,
 		error,
 	};

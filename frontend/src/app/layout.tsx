@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { ReactQueryProvider } from "@/lib/react-query-provider";
 import { Navbar } from "@/components/navbar/Navbar";
+import { BlockedAccountGuard } from "@/components/blocked/BlockedAccountGuard";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,8 +21,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<body>
 				<ReactQueryProvider>
 					<Toaster position="top-right" richColors closeButton />
-					<Navbar />
-					<main className="pt-24">{children}</main>
+					<BlockedAccountGuard>
+						<Navbar />
+						<main className="pt-24">{children}</main>
+					</BlockedAccountGuard>
 				</ReactQueryProvider>
 			</body>
 		</html>
